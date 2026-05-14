@@ -10,10 +10,10 @@ type PolicyFile struct {
 
 // PolicyMeta holds the policy-level metadata.
 type PolicyMeta struct {
-	ID          string `yaml:"id"`
-	Name        string `yaml:"name"`
-	Category    string `yaml:"category"` // maps to models.DetectorCategory
-	Description string `yaml:"description"`
+	ID          string                  `yaml:"id"`
+	Name        string                  `yaml:"name"`
+	Category    models.DetectorCategory `yaml:"category"`
+	Description string                  `yaml:"description"`
 }
 
 // RuleDef is one rule entry inside a policy file.
@@ -87,6 +87,5 @@ type CallWithKwargValueExpr struct {
 // CallUsesParamExpr fires when a matching call receives a path-like param as an arg.
 type CallUsesParamExpr struct {
 	Callees        []string `yaml:"callees,omitempty"`
-	CalleePrefix   string   `yaml:"callee_prefix,omitempty"`
 	CalleePrefixes []string `yaml:"callee_prefixes,omitempty"`
 }
