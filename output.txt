@@ -1,0 +1,1544 @@
+Scan summary
+  Repo:           C:\Users\Joana\Desktop\sairen-files\github\openai-agents-python
+  Tools found:    237
+  Findings:       186
+  Overall score:   25%
+
+Per-tool readiness
+  approval_tool                     25%  (15 findings)
+  write_file                        49%  (5 findings)
+  get_weather                       52%  (10 findings)
+  read_file                         66%  (4 findings)
+  git_last_commit_timestamp         68%  (2 findings)
+  get_current_weather               74%  (3 findings)
+  _container_running                80%  (1 findings)
+  _ensure_container                 80%  (1 findings)
+  _run_python                       80%  (1 findings)
+  _start_mcp_server                 80%  (1 findings)
+  build_docker_environment          80%  (1 findings)
+  clone_repo                        80%  (1 findings)
+  interactive_shell_path            80%  (1 findings)
+  local_sse_server                  80%  (1 findings)
+  open_file                         80%  (1 findings)
+  run_examples                      80%  (1 findings)
+  run_single                        80%  (1 findings)
+  start_temporary_redis_server      80%  (1 findings)
+  test_resolve_workspace_path_helper_allows_extra_root_symlink_target  80%  (1 findings)
+  test_resolve_workspace_path_helper_allows_nested_read_only_extra_grant_on_read  80%  (1 findings)
+  test_resolve_workspace_path_helper_rejects_extra_root_symlink_to_root  80%  (1 findings)
+  test_resolve_workspace_path_helper_rejects_extra_root_when_not_allowed  80%  (1 findings)
+  test_resolve_workspace_path_helper_rejects_nested_read_only_extra_grant_on_write  80%  (1 findings)
+  test_tracing_atexit_cleanup_timeout_preserves_process_exit_code_on_504  80%  (1 findings)
+  dangerous_tool                    81%  (4 findings)
+  send_email                        85%  (2 findings)
+  update_seat                       85%  (2 findings)
+  approve_me                        86%  (3 findings)
+  foo                               86%  (3 findings)
+  get_secret_word                   86%  (3 findings)
+  needs_ok                          86%  (3 findings)
+  reject_me                         86%  (3 findings)
+  slow_tool                         86%  (3 findings)
+  timeout_tool                      87%  (2 findings)
+  add_tool                          90%  (2 findings)
+  allow_output_guardrail            90%  (2 findings)
+  alpha_tool                        90%  (2 findings)
+  already_ran                       90%  (2 findings)
+  bad_tool                          90%  (2 findings)
+  beta_tool                         90%  (2 findings)
+  deferred_lookup                   90%  (2 findings)
+  faq_lookup_tool                   90%  (2 findings)
+  fast_tool                         90%  (2 findings)
+  inner_hitl_tool                   90%  (2 findings)
+  lookup_account                    90%  (2 findings)
+  pending_me                        90%  (2 findings)
+  test_guardrail                    90%  (2 findings)
+  tool2                             90%  (2 findings)
+  boom                              92%  (1 findings)
+  create_config                     93%  (1 findings)
+  update_customer_record            93%  (1 findings)
+  add                               95%  (1 findings)
+  all_optional_params_function      95%  (1 findings)
+  allow_guardrail                   95%  (1 findings)
+  allow_input                       95%  (1 findings)
+  allow_output                      95%  (1 findings)
+  another_tool                      95%  (1 findings)
+  apply_lifecycle_patch             95%  (1 findings)
+  approval_echo                     95%  (1 findings)
+  approval_note                     95%  (1 findings)
+  assert_manifest_materialized_tool  95%  (1 findings)
+  assert_restored_lifecycle_state_tool  95%  (1 findings)
+  assert_workspace_escape_blocked_tool  95%  (1 findings)
+  async_no_context                  95%  (1 findings)
+  async_with_context                95%  (1 findings)
+  check_for_password                95%  (1 findings)
+  check_for_ssn                     95%  (1 findings)
+  decorated_input_guardrail         95%  (1 findings)
+  decorated_named_input_guardrail   95%  (1 findings)
+  decorated_named_output_guardrail  95%  (1 findings)
+  decorated_output_guardrail        95%  (1 findings)
+  deferred_lookup_account           95%  (1 findings)
+  delegate_tool                     95%  (1 findings)
+  disabled_tool                     95%  (1 findings)
+  echo                              95%  (1 findings)
+  echo_tool                         95%  (1 findings)
+  externally_released_tripwire_guardrail  95%  (1 findings)
+  extract_lifecycle_archive         95%  (1 findings)
+  first_approval_tool               95%  (1 findings)
+  foo_tool                          95%  (1 findings)
+  get_current_timestamp             95%  (1 findings)
+  get_discount_approval_rule        95%  (1 findings)
+  get_user_name                     95%  (1 findings)
+  greet                             95%  (1 findings)
+  guarded                           95%  (1 findings)
+  inner_sensitive_tool              95%  (1 findings)
+  inner_shared_tool                 95%  (1 findings)
+  inner_tool                        95%  (1 findings)
+  long_sleeping_guardrail           95%  (1 findings)
+  lookup_customer_profile           95%  (1 findings)
+  lookup_secret                     95%  (1 findings)
+  mixed_guardrail                   95%  (1 findings)
+  optional_param_function           95%  (1 findings)
+  other_tool                        95%  (1 findings)
+  outer_shared_tool                 95%  (1 findings)
+  outer_tool                        95%  (1 findings)
+  pending_tool                      95%  (1 findings)
+  raise_exception_guardrail         95%  (1 findings)
+  record_guardrail                  95%  (1 findings)
+  record_side_effect                95%  (1 findings)
+  reject_content_guardrail          95%  (1 findings)
+  second_approval_tool              95%  (1 findings)
+  sleeping_tripwire_guardrail       95%  (1 findings)
+  start_lifecycle_pty               95%  (1 findings)
+  sync_no_context_no_args           95%  (1 findings)
+  sync_no_context_override          95%  (1 findings)
+  sync_no_context_with_args         95%  (1 findings)
+  sync_tool_decorator_style         95%  (1 findings)
+  sync_with_context                 95%  (1 findings)
+  synthetic_tool                    95%  (1 findings)
+  test_guard                        95%  (1 findings)
+  test_tool_one                     95%  (1 findings)
+  test_tool_two                     95%  (1 findings)
+  timeout_configured_tool           95%  (1 findings)
+  tool_one                          95%  (1 findings)
+  triage_tool                       95%  (1 findings)
+  tripwire_guardrail                95%  (1 findings)
+  visible_lookup_account            95%  (1 findings)
+  will_fail_on_bad_json             95%  (1 findings)
+  will_not_fail_on_bad_json         95%  (1 findings)
+  will_not_fail_on_bad_json_async   95%  (1 findings)
+  billing_status_checker           100%  (0 findings)
+  block_sensitive_output           100%  (0 findings)
+  calculate_sum                    100%  (0 findings)
+  fetch_random_image               100%  (0 findings)
+  format_message                   100%  (0 findings)
+  get_contact_info                 100%  (0 findings)
+  get_current_time                 100%  (0 findings)
+  get_customer_profile             100%  (0 findings)
+  get_discount_approval_path       100%  (0 findings)
+  get_invoice_status               100%  (0 findings)
+  get_policy_reference             100%  (0 findings)
+  get_shipping_credit_balance      100%  (0 findings)
+  get_shipping_eta                 100%  (0 findings)
+  get_temperature                  100%  (0 findings)
+  get_user_data                    100%  (0 findings)
+  helper                           100%  (0 findings)
+  how_many_jokes                   100%  (0 findings)
+  list_open_orders                 100%  (0 findings)
+  lookup_insurance_eligibility     100%  (0 findings)
+  lookup_order                     100%  (0 findings)
+  lookup_patient                   100%  (0 findings)
+  lookup_referral_status           100%  (0 findings)
+  multiply_by_two                  100%  (0 findings)
+  ping                             100%  (0 findings)
+  publish_announcement             100%  (0 findings)
+  query_runloop_network_policy     100%  (0 findings)
+  query_runloop_secret             100%  (0 findings)
+  random_number                    100%  (0 findings)
+  random_number_tool               100%  (0 findings)
+  reject_args_guardrail            100%  (0 findings)
+  reject_phone_numbers             100%  (0 findings)
+  reject_sensitive_words           100%  (0 findings)
+  route_to_human_queue             100%  (0 findings)
+  submit_refund                    100%  (0 findings)
+  test_tool                        100%  (0 findings)
+
+Findings
+
+  approval_tool
+    [OAIS-005]  MED OpenAI tool raises exceptions without a structured error contract  (tests/test_tool_origin.py:99)
+        When a @function_tool raises, the SDK surfaces the exception to the model as an opaque       
+        string. The model often cannot recover or retry intelligently. Returning a structured
+        error object lets the model branch on the failure mode and decide whether to retry or
+        escalate.                                                                            
+        fix: Catch known failure modes and return a structured payload such as `{"error": "...", "retryable": False}` instead of raising.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/test_runner_pause_resume.py:75)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:1839)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:2413)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:2513)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:2619)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:3568)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:3664)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:4738)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:800)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:1040)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner_streamed.py:1742)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_tracing.py:27)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_state.py:579)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_tool_origin.py:99)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  write_file
+    [CATL-003] HIGH File write tool has no path validation  (tests/sandbox/test_runtime.py:802)
+        The tool is classified as a file write surface and passes a path-like parameter to a       
+        file operation without resolving it first. A model-supplied                        
+        `../../etc/cron.d/backdoor` reaches real filesystem state. Path traversal is one of
+        the most reliable exploitation paths in agent tools.                               
+        fix: Resolve the path with `Path(...).resolve()` and assert it falls under an allowed working directory before writing.
+
+    [CSDK-004] HIGH Path parameter used in I/O without validation  (tests/sandbox/test_runtime.py:802)
+        The tool accepts a path-like parameter and passes it to file or directory operations        
+        without resolving or sandboxing the path. A model-supplied `../../etc/passwd` is    
+        reachable. Detection is heuristic — confirm the parameter is genuinely user-supplied
+        before applying the fix.                                                            
+        fix: Resolve the path with `Path(...).resolve()` and assert it sits under an allowed root.
+
+    [OAIS-005]  MED OpenAI tool raises exceptions without a structured error contract  (tests/sandbox/integration_tests/_helpers.py:346)
+        When a @function_tool raises, the SDK surfaces the exception to the model as an opaque       
+        string. The model often cannot recover or retry intelligently. Returning a structured
+        error object lets the model branch on the failure mode and decide whether to retry or
+        escalate.                                                                            
+        fix: Catch known failure modes and return a structured payload such as `{"error": "...", "retryable": False}` instead of raising.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/_helpers.py:346)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:802)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  get_weather
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/agent_patterns/forcing_tool_use.py:47)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/memory/advanced_sqlite_session_example.py:16)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/model_providers/any_llm_auto.py:18)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/model_providers/any_llm_provider.py:21)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/model_providers/custom_example_agent.py:36)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/model_providers/custom_example_global.py:45)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/model_providers/custom_example_provider.py:52)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/model_providers/litellm_auto.py:21)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/model_providers/litellm_provider.py:22)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_example_workflows.py:709)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  read_file
+    [CSDK-004] HIGH Path parameter used in I/O without validation  (tests/sandbox/test_runtime.py:808)
+        The tool accepts a path-like parameter and passes it to file or directory operations        
+        without resolving or sandboxing the path. A model-supplied `../../etc/passwd` is    
+        reachable. Detection is heuristic — confirm the parameter is genuinely user-supplied
+        before applying the fix.                                                            
+        fix: Resolve the path with `Path(...).resolve()` and assert it sits under an allowed root.
+
+    [OAIS-005]  MED OpenAI tool raises exceptions without a structured error contract  (tests/sandbox/integration_tests/_helpers.py:353)
+        When a @function_tool raises, the SDK surfaces the exception to the model as an opaque       
+        string. The model often cannot recover or retry intelligently. Returning a structured
+        error object lets the model branch on the failure mode and decide whether to retry or
+        escalate.                                                                            
+        fix: Catch known failure modes and return a structured payload such as `{"error": "...", "retryable": False}` instead of raising.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/_helpers.py:353)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/test_runtime.py:808)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  git_last_commit_timestamp
+    [OSH-004]  MED No OpenShell resource limits configured  (docs/scripts/translate_docs.py:374)
+        The repo declares no OpenShell policy with cpu/memory/time limits. A runaway tool call
+        (infinite loop, memory blow-up) is unbounded by default.                      
+        fix: The generated openshell/policy.yaml will include default limits — review them against your expected workloads before committing.
+
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (docs/scripts/translate_docs.py:374)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  get_current_weather
+    [CSDK-001]  LOW Tool has no description  (examples/mcp/sse_example/server.py:27)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [CSDK-001]  LOW Tool has no description  (examples/mcp/streamablehttp_example/server.py:28)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OSH-005] HIGH Network egress is unrestricted  (examples/mcp/streamablehttp_example/server.py:28)
+        The tool issues HTTP calls to a URL derived from inputs, with no host allowlist in the       
+        code path. OpenShell can restrict outbound DNS/connect at the sandbox layer, which is
+        strictly more reliable than enforcing it in Python.                                  
+        fix: Define an allowlist of hostnames the tool may reach. The generated OpenShell policy will gate egress to those hosts.
+
+
+  _container_running
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/memory/dapr_session_example.py:445)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  _ensure_container
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/memory/dapr_session_example.py:462)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  _run_python
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (tests/tracing/test_import_side_effects.py:14)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  _start_mcp_server
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/mcp/manager_example/smoke_test.py:59)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  build_docker_environment
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/sandbox/tutorials/misc.py:135)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  clone_repo
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (src/agents/sandbox/util/github.py:13)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  interactive_shell_path
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/run_examples.py:181)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  local_sse_server
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/mcp/sse_remote_example/main.py:31)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  open_file
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/tools/image_generator.py:20)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  run_examples
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/run_examples.py:611)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  run_single
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/run_examples.py:665)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  start_temporary_redis_server
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (examples/run_examples.py:303)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  test_resolve_workspace_path_helper_allows_extra_root_symlink_target
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (tests/sandbox/test_runtime_helpers.py:39)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  test_resolve_workspace_path_helper_allows_nested_read_only_extra_grant_on_read
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (tests/sandbox/test_runtime_helpers.py:168)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  test_resolve_workspace_path_helper_rejects_extra_root_symlink_to_root
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (tests/sandbox/test_runtime_helpers.py:99)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  test_resolve_workspace_path_helper_rejects_extra_root_when_not_allowed
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (tests/sandbox/test_runtime_helpers.py:69)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  test_resolve_workspace_path_helper_rejects_nested_read_only_extra_grant_on_write
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (tests/sandbox/test_runtime_helpers.py:130)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  test_tracing_atexit_cleanup_timeout_preserves_process_exit_code_on_504
+    [OSH-002] HIGH Shell invocation without an allowed-command list  (tests/test_trace_processor.py:559)
+        The tool shells out but does not constrain which binaries can be invoked. Even with        
+        `shell=False`, an unconstrained `argv[0]` lets the model invoke arbitrary installed
+        binaries. OpenShell can enforce an allowlist at the sandbox layer.                 
+        fix: Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The generated OpenShell policy will also include a command allowlist.
+
+
+  dangerous_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_guardrails.py:672)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_guardrails.py:730)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_guardrails.py:808)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_guardrails.py:849)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  send_email
+    [CATL-008]  MED External API tool has no rate limit guard  (examples/basic/tool_guardrails.py:18)
+        The tool calls an external API (email, Slack, payment, etc.) and contains no rate             
+        limit guard or retry backoff. Agents can call tools in rapid loops; without           
+        throttling, a runaway agent can exhaust API quotas, incur unexpected costs, or trigger
+        abuse blocks.                                                                         
+        fix: Add exponential backoff with jitter on retries. Enforce a per-run call budget and surface a structured error when the limit is reached.
+
+    [OAIS-006]  MED Mutating OpenAI tool has no idempotency key  (examples/basic/tool_guardrails.py:18)
+        Tool name suggests a side effect (create/send/refund/…). The OpenAI Agents SDK              
+        retries tool calls on timeout and ambiguous failures; without an idempotency key the
+        same action can fire twice. Downstream services must also honor the key for this    
+        protection to be effective.                                                         
+        fix: Add an `idempotency_key: str` parameter and pass it to the backing API.
+
+
+  update_seat
+    [OAIS-006]  MED Mutating OpenAI tool has no idempotency key  (examples/customer_service/main.py:68)
+        Tool name suggests a side effect (create/send/refund/…). The OpenAI Agents SDK              
+        retries tool calls on timeout and ambiguous failures; without an idempotency key the
+        same action can fire twice. Downstream services must also honor the key for this    
+        protection to be effective.                                                         
+        fix: Add an `idempotency_key: str` parameter and pass it to the backing API.
+
+    [OAIS-006]  MED Mutating OpenAI tool has no idempotency key  (examples/realtime/app/agent.py:40)
+        Tool name suggests a side effect (create/send/refund/…). The OpenAI Agents SDK              
+        retries tool calls on timeout and ambiguous failures; without an idempotency key the
+        same action can fire twice. Downstream services must also honor the key for this    
+        protection to be effective.                                                         
+        fix: Add an `idempotency_key: str` parameter and pass it to the backing API.
+
+
+  approve_me
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:997)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1259)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1313)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  foo
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:852)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_stream_events.py:82)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_stream_events.py:280)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  get_secret_word
+    [CSDK-001]  LOW Tool has no description  (examples/mcp/sse_example/server.py:21)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [CSDK-001]  LOW Tool has no description  (examples/mcp/streamablehttp_custom_client_example/server.py:21)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [CSDK-001]  LOW Tool has no description  (examples/mcp/streamablehttp_example/server.py:22)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  needs_ok
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_impl_resume_paths.py:356)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_state.py:5901)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_state.py:5924)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  reject_me
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1487)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1545)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:2063)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  slow_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:834)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:857)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:874)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  timeout_tool
+    [OAIS-005]  MED OpenAI tool raises exceptions without a structured error contract  (tests/test_function_tool.py:890)
+        When a @function_tool raises, the SDK surfaces the exception to the model as an opaque       
+        string. The model often cannot recover or retry intelligently. Returning a structured
+        error object lets the model branch on the failure mode and decide whether to retry or
+        escalate.                                                                            
+        fix: Catch known failure modes and return a structured payload such as `{"error": "...", "retryable": False}` instead of raising.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:890)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  add_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:4309)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner_streamed.py:1618)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  allow_output_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_run_step_execution.py:1298)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [CSDK-001]  LOW Tool has no description  (tests/test_run_step_execution.py:1368)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  alpha_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_state.py:362)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_state.py:402)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  already_ran
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1722)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1765)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  bad_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:872)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:887)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  beta_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_state.py:366)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_state.py:406)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  deferred_lookup
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:505)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:153)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  faq_lookup_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/customer_service/main.py:42)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/realtime/app/agent.py:17)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  fast_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_guardrails.py:482)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_guardrails.py:624)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  inner_hitl_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:296)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:358)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  lookup_account
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1187)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_tool_origin.py:76)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  pending_me
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1491)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:2067)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  test_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:382)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:401)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  tool2
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:4304)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner_streamed.py:1613)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  boom
+    [OAIS-005]  MED OpenAI tool raises exceptions without a structured error contract  (tests/test_function_tool.py:566)
+        When a @function_tool raises, the SDK surfaces the exception to the model as an opaque       
+        string. The model often cannot recover or retry intelligently. Returning a structured
+        error object lets the model branch on the failure mode and decide whether to retry or
+        escalate.                                                                            
+        fix: Catch known failure modes and return a structured payload such as `{"error": "...", "retryable": False}` instead of raising.
+
+
+  create_config
+    [OAIS-006]  MED Mutating OpenAI tool has no idempotency key  (examples/basic/stream_function_call_args.py:16)
+        Tool name suggests a side effect (create/send/refund/…). The OpenAI Agents SDK              
+        retries tool calls on timeout and ambiguous failures; without an idempotency key the
+        same action can fire twice. Downstream services must also honor the key for this    
+        protection to be effective.                                                         
+        fix: Add an `idempotency_key: str` parameter and pass it to the backing API.
+
+
+  update_customer_record
+    [OAIS-006]  MED Mutating OpenAI tool has no idempotency key  (examples/realtime/twilio_sip/agents.py:36)
+        Tool name suggests a side effect (create/send/refund/…). The OpenAI Agents SDK              
+        retries tool calls on timeout and ambiguous failures; without an idempotency key the
+        same action can fire twice. Downstream services must also honor the key for this    
+        protection to be effective.                                                         
+        fix: Add an `idempotency_key: str` parameter and pass it to the backing API.
+
+
+  add
+    [CSDK-001]  LOW Tool has no description  (examples/mcp/manager_example/mcp_server.py:16)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  all_optional_params_function
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:186)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  allow_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:424)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  allow_input
+    [CSDK-001]  LOW Tool has no description  (tests/test_source_compat_constructors.py:169)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  allow_output
+    [CSDK-001]  LOW Tool has no description  (tests/test_source_compat_constructors.py:173)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  another_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:472)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  apply_lifecycle_patch
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/_helpers.py:376)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  approval_echo
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_session_scenario.py:42)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  approval_note
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_session_scenario.py:52)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  assert_manifest_materialized_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/_helpers.py:370)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  assert_restored_lifecycle_state_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/_helpers.py:423)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  assert_workspace_escape_blocked_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/_helpers.py:384)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  async_no_context
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:64)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  async_with_context
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:78)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  check_for_password
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:316)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  check_for_ssn
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:349)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  decorated_input_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:242)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  decorated_named_input_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:247)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  decorated_named_output_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:280)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  decorated_output_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:275)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  deferred_lookup_account
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1064)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  delegate_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:1120)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  disabled_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:465)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  echo
+    [CSDK-001]  LOW Tool has no description  (examples/mcp/manager_example/mcp_server.py:21)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  echo_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:4342)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  externally_released_tripwire_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_run_step_execution.py:1981)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  extract_lifecycle_archive
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/_helpers.py:390)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  first_approval_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1127)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  foo_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_tracing.py:76)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  get_current_timestamp
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:932)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  get_discount_approval_rule
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_example_workflows.py:588)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  get_user_name
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/agent_patterns/agents_as_tools_conditional.py:31)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  greet
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_clone_shallow_copy.py:5)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  guarded
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:824)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  inner_sensitive_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_state.py:2705)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  inner_shared_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:408)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  inner_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1672)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  long_sleeping_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_run_step_execution.py:2104)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  lookup_customer_profile
+    [OAIS-001]  LOW OpenAI tool has no description  (examples/memory/file_hitl_example.py:129)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  lookup_secret
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_step_execution.py:1500)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  mixed_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:478)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  optional_param_function
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:162)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  other_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/extensions/experiemental/codex/test_codex_tool.py:1209)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  outer_shared_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:404)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  outer_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1668)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  pending_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1878)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  raise_exception_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:461)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  record_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_run_step_execution.py:1109)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  record_side_effect
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_step_execution.py:1506)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  reject_content_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:441)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  second_approval_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1132)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  sleeping_tripwire_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_run_step_execution.py:2046)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  start_lifecycle_pty
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/sandbox/integration_tests/_helpers.py:397)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  sync_no_context_no_args
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:26)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  sync_no_context_override
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:92)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  sync_no_context_with_args
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:38)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  sync_tool_decorator_style
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool.py:978)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  sync_with_context
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:51)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  synthetic_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_run_step_execution.py:1532)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  test_guard
+    [CSDK-001]  LOW Tool has no description  (tests/test_tool_guardrails.py:529)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  test_tool_one
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:3247)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  test_tool_two
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:3252)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  timeout_configured_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:256)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  tool_one
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/realtime/test_runner.py:208)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  triage_tool
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_agent_runner.py:1116)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  tripwire_guardrail
+    [CSDK-001]  LOW Tool has no description  (tests/test_run_step_execution.py:1062)
+        The Claude Agent SDK uses the tool's docstring as the description shown to the model.     
+        With no description, the model must guess from the function name when to call this
+        tool — which causes mis-selection under ambiguous prompts.                        
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  visible_lookup_account
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_hitl_error_scenarios.py:1056)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  will_fail_on_bad_json
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:106)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  will_not_fail_on_bad_json
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:124)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+  will_not_fail_on_bad_json_async
+    [OAIS-001]  LOW OpenAI tool has no description  (tests/test_function_tool_decorator.py:141)
+        The OpenAI Agents SDK surfaces the @function_tool's docstring as the tool description      
+        shown to the model. With no description the model must guess from the function name
+        when to call this tool — which causes mis-selection under ambiguous prompts.       
+        fix: Add a one-paragraph docstring describing inputs, outputs, and when to use this tool.
+
+
+Generated artifacts
+  hooks/pretooluse_validate.py  (claude_sdk)
+    Generated from 186 hook-eligible findings across 6 tools. Re-runs are byte-stable.
+  hooks/posttooluse_log.py  (claude_sdk)
+    Structured logging hook. Phase 2 will route these events to OTEL.
+  openshell/policy.yaml  (openshell)
+    Generated from 21 OpenShell finding(s).
