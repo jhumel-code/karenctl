@@ -198,11 +198,10 @@ rules:
 #
 #
 #   call_uses_unnormalized_path_param:
-#       Per-param path-flow check. Fires only on params that flow into a
-#       params have been normalized — fires only on params that flow into a
-#       matching call AND have NOT been .resolve()'d / realpath()'d in the
-#       same function. PREFER THIS over call_uses_param for path-safety
-#       rules; it avoids the false-negative where one normalized param
+#       Per-param path-flow check. Tracks WHICH params have been normalized
+#       — fires only on params that flow into a matching call AND have NOT
+#       been .resolve()'d / realpath()'d in the same function. Per-param
+#       tracking avoids the false-negative where one normalized param
 #       suppresses findings on an unrelated unnormalized one.
 #
 #       callees:         [open, Path]    OPTIONAL. Exact-match callees.

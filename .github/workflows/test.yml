@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [main]
 
+env:
+  CGO_ENABLED: "1" # tree-sitter is a C library; see ARCHITECTURE.md §9
+
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -18,18 +21,11 @@ jobs:
           go-version-file: go.mod
           cache: true
 
-      - name: Install C toolchain (tree-sitter requires CGO)
-        run: sudo apt-get install -y gcc
-
       - name: vet
         run: go vet ./...
 
       - name: test
-        run: CGO_ENABLED=1 go test -race ./...
-        env:
-          CGO_ENABLED: "1"
+        run: go test -race ./...
 
       - name: build
-        run: CGO_ENABLED=1 go build ./cmd/trustabl
-        env:
-          CGO_ENABLED: "1"
+        run: go build ./cmd/trustabl
