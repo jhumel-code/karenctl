@@ -10,6 +10,7 @@ policy:
 rules:
   - id: OSH-001
     title: subprocess called with shell=True
+    scope: tool
     severity: critical
     confidence: 0.99
     language: python
@@ -17,7 +18,6 @@ rules:
       - claude_sdk_tool
       - mcp_tool
       - shell_invocation
-    singleton: false
     match:
       call_with_kwarg_value:
         callee_prefix: subprocess.
@@ -36,6 +36,7 @@ rules:
 
   - id: OSH-002
     title: Shell invocation without an allowed-command list
+    scope: tool
     severity: high
     confidence: 0.85
     language: python
@@ -43,7 +44,6 @@ rules:
       - claude_sdk_tool
       - mcp_tool
       - shell_invocation
-    singleton: false
     match:
       all:
         - has_shell_call: true

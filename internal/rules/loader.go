@@ -9,7 +9,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/trustabl/karenctl/internal/models"
+	"github.com/trustabl/trustabl/internal/models"
 )
 
 // Load walks fsys recursively, decodes every .yaml file, validates it, and
@@ -62,11 +62,11 @@ func Load(fsys fs.FS) ([]PolicyFile, error) {
 		}
 		if pf.Policy.Category != "" {
 			switch pf.Policy.Category {
-			case models.CategoryClaudeSDK, models.CategoryOpenShell,
-				models.CategoryOpenAISDK, models.CategoryMCP, models.CategoryCatalog:
+			case models.CategoryClaudeSDK, models.CategoryOpenAISDK, models.CategoryOpenShell,
+				models.CategoryMCP, models.CategoryCatalog:
 				// valid
 			default:
-				errs = append(errs, fmt.Errorf("%s: unknown category %q (allowed: claude_sdk, openshell, openai_sdk, mcp, catalog)", name, pf.Policy.Category))
+				errs = append(errs, fmt.Errorf("%s: unknown category %q (allowed: claude_sdk, openai_sdk, openshell, mcp, catalog)", name, pf.Policy.Category))
 			}
 		}
 		if len(errs) > policyErrCount {
@@ -124,6 +124,18 @@ func Load(fsys fs.FS) ([]PolicyFile, error) {
 					errs = append(errs, fmt.Errorf("%s: unknown language %q (allowed: python, typescript, javascript, go)", tag, rule.Language))
 				}
 			}
+			if rule.Scope == "" {
+				errs = append(errs, fmt.Errorf("%s: scope is required (tool|agent|repo)", tag))
+			} else if !models.ValidScope(rule.Scope) {
+				errs = append(errs, fmt.Errorf("%s: unknown scope %q (allowed: tool, agent, repo)", tag, rule.Scope))
+			}
+			if models.ValidScope(rule.Scope) {
+				for _, kind := range rule.AppliesTo {
+					if !validAppliesToForScope(rule.Scope, kind) {
+						errs = append(errs, fmt.Errorf("%s: applies_to value %q is not valid for scope %q", tag, kind, rule.Scope))
+					}
+				}
+			}
 			// Populate category from policy metadata — not in YAML.
 			pf.Rules[i].Category = models.DetectorCategory(pf.Policy.Category)
 			// Default language to python for backwards compatibility. Once
@@ -140,6 +152,27 @@ func Load(fsys fs.FS) ([]PolicyFile, error) {
 		return nil, errors.Join(errs...)
 	}
 	return policies, nil
+}
+
+func validAppliesToForScope(scope models.Scope, kind string) bool {
+	switch scope {
+	case models.ScopeTool:
+		switch kind {
+		case "claude_sdk_tool", "openai_tool", "mcp_tool", "shell_invocation", "google_adk_tool", "unknown":
+			return true
+		}
+	case models.ScopeAgent:
+		switch kind {
+		case "openai_agent", "openai_sandbox_agent", "claude_agent_definition":
+			return true
+		}
+	case models.ScopeRepo:
+		switch kind {
+		case "claude_sdk", "openai_agents", "openshell", "mcp":
+			return true
+		}
+	}
+	return false
 }
 
 // decodePolicyFile opens, decodes, and closes one YAML file from fsys.

@@ -16,7 +16,7 @@ rules:
     language: python
     applies_to:
       - mcp_tool
-    singleton: false
+    scope: tool
     match:
       param_name_matches:
         exact:
@@ -49,7 +49,7 @@ rules:
     language: python
     applies_to:
       - mcp_tool
-    singleton: false
+    scope: tool
     match:
       has_body_text:
         - "eval("
@@ -74,7 +74,7 @@ rules:
     language: python
     applies_to:
       - mcp_tool
-    singleton: false
+    scope: tool
     match:
       has_body_text:
         - "pickle.loads"

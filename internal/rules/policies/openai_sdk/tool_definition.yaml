@@ -10,12 +10,12 @@ policy:
 rules:
   - id: OAIS-001
     title: OpenAI tool has no description
+    scope: tool
     severity: low
     confidence: 0.95
     language: python
     applies_to:
       - openai_tool
-    singleton: false
     match:
       has_docstring: false
     explanation: >
@@ -31,12 +31,12 @@ rules:
 
   - id: OAIS-002
     title: OpenAI tool parameters are not type-annotated
+    scope: tool
     severity: medium
     confidence: 0.9
     language: python
     applies_to:
       - openai_tool
-    singleton: false
     match:
       all:
         - has_params: true
@@ -54,12 +54,12 @@ rules:
 
   - id: OAIS-007
     title: Ambiguous OpenAI tool name
+    scope: tool
     severity: low
     confidence: 0.9
     language: python
     applies_to:
       - openai_tool
-    singleton: false
     match:
       name_in:
         - process

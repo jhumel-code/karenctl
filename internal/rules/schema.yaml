@@ -1,4 +1,4 @@
-# karenctl rule schema — annotated reference
+# trustabl rule schema — annotated reference
 #
 # This file documents every field accepted by the YAML rules engine. It is
 # DOCUMENTATION, not a runtime policy: it lives outside policies/ so the
@@ -28,8 +28,7 @@ policy:
 
   name: Network call hygiene                # REQUIRED. Human title. Reserved for future UX surfaces.
 
-  category: claude_sdk                      # REQUIRED. Allowed: claude_sdk | openshell |
-                                            #   openai_sdk | mcp | catalog.
+  category: claude_sdk                      # REQUIRED. Allowed: claude_sdk | openshell.
                                             # Inherited by every rule in this file.
 
   description: >                            # REQUIRED. Multi-line ok. Describe the policy's intent.
@@ -62,17 +61,27 @@ rules:
 
     applies_to:                             # REQUIRED. Non-empty list of ToolKind strings:
       - claude_sdk_tool                     #   claude_sdk_tool   — @tool / @claude_tool / claude_agent_sdk
-      - mcp_tool                            #   mcp_tool          — @server.tool / @mcp.tool / .register_tool
-                                            #   openai_tool       — @function_tool (OpenAI Agents SDK)
-                                            #   google_adk_tool   — @adk.tool / @genai.tool (Google ADK)
+      - mcp_tool                            #   openai_tool       — OpenAI Agents SDK @function_tool
+                                            #   mcp_tool          — @server.tool / @mcp.tool / .register_tool
                                             #   shell_invocation  — bare functions calling subprocess.* / os.system
                                             #   unknown           — fallback; rarely useful
+                                            #
+                                            # Be honest about scope: a rule's explanation/fix text
+                                            # often references a specific SDK ("the Claude Agent SDK
+                                            # uses the docstring as ..."). Only list a kind in
+                                            # applies_to if the rule's user-facing text is correct
+                                            # for that kind. Cross-SDK rules belong in their own
+                                            # SDK-specific policy file with their own framing.
 
-    singleton: false                        # OPTIONAL (default false). If true, the rule fires AT MOST
-                                            # once per scan, against the first applicable tool. Use for
-                                            # manifest-level checks ("no resource limits configured")
-                                            # whose finding does not vary per tool. Pair with `match: {}`
-                                            # to fire unconditionally.
+    scope: tool                             # REQUIRED. One of: tool | agent | repo.
+                                            #   tool  — fires per ToolDef. Input: a ToolDef + ParsedFile.
+                                            #           applies_to accepts: claude_sdk_tool, openai_tool,
+                                            #           mcp_tool, shell_invocation, unknown.
+                                            #   agent — fires per AgentDef (Agent/SandboxAgent/AgentDefinition
+                                            #           constructor call). applies_to accepts: openai_agent,
+                                            #           openai_sandbox_agent, claude_agent_definition.
+                                            #   repo  — fires once per scan. applies_to accepts:
+                                            #           claude_sdk, openai_agents, openshell, mcp.
 
     match:                                  # REQUIRED. Predicate expression. See the reference section
                                             # below the example for the full vocabulary.
@@ -157,15 +166,6 @@ rules:
 #       sparingly — substring matching is brittle vs AST-based predicates.
 #       Useful when you need to detect a known constant by name.
 #
-#   capability_class_in: [class, class, ...]
-#       Fires when the tool's CapabilityClass (populated by the catalog
-#       enrichment step in scanner.Run) matches any listed value. Returns
-#       false for tools the embedded catalog did not classify.
-#       Values: code_execution | shell_execution | file_read | file_write |
-#         network_read | network_write | agent_spawn | memory_write |
-#         data_query | data_mutate | auth_action | computer_use | external_api
-#
-
 #
 # ━━━ NESTED STRUCT PREDICATES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #
@@ -197,27 +197,87 @@ rules:
 #       value:         "True"            REQUIRED. Literal text — quote bool/None.
 #
 #
-#   call_uses_param:
-#       Body-wide path-flow check. Fires when ANY pathish param flows into
-#       a matching call AND .resolve()/realpath() does NOT appear anywhere
-#       in the body. COARSE: a single body-wide normalization suppresses the
-#       rule even if some other param is unresolved.
-#
-#       callees:         [open, Path]    OPTIONAL. Exact-match callees.
-#       callee_prefixes: [shutil., os.]  OPTIONAL. Prefix-match callees.
-#
-#       "Pathish" parameters are determined by analysis.IsPathishParam:
-#       names like path/file/dir, suffixes _path/_file/_dir/_directory,
-#       prefixes file_/path_. Word-boundary; `editor_id` does not match.
-#
-#
 #   call_uses_unnormalized_path_param:
-#       Per-param path-flow check. Like call_uses_param, but tracks WHICH
-#       params have been normalized — fires only on params that flow into a
-#       matching call AND have NOT been .resolve()'d / realpath()'d in the
-#       same function. PREFER THIS over call_uses_param for path-safety
-#       rules; it avoids the false-negative where one normalized param
+#       Per-param path-flow check. Tracks WHICH params have been normalized
+#       — fires only on params that flow into a matching call AND have NOT
+#       been .resolve()'d / realpath()'d in the same function. Per-param
+#       tracking avoids the false-negative where one normalized param
 #       suppresses findings on an unrelated unnormalized one.
 #
 #       callees:         [open, Path]    OPTIONAL. Exact-match callees.
 #       callee_prefixes: [shutil., os.]  OPTIONAL. Prefix-match callees.
+#
+#
+#   tool_decorator_kwarg_value:
+#       Fires when the tool's decorator call has a specific kwarg equal to a
+#       specific value (literal text comparison against the source). Use for
+#       @function_tool(strict_mode=False) style checks.
+#
+#       kwarg: strict_mode               REQUIRED. Decorator kwarg name.
+#       value: "False"                   REQUIRED. Literal text — quote bool/None.
+#
+#
+#   tool_decorator_kwarg_present: [name, name, ...]
+#       Fires when the tool's decorator call has ANY of the listed kwargs set.
+#
+#
+# ━━━ AGENT-SCOPE PREDICATES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# (used only in scope: agent rules)
+#
+#   agent_class: [Agent, SandboxAgent, AgentDefinition]
+#       Fires when the agent's class name is any of the listed values.
+#
+#   agent_kwarg_present: [kwarg, dotted.path, ...]
+#       Fires when ANY of the listed kwargs is present in the agent constructor.
+#       Supports dotted paths for nested kwargs (model_settings.tool_choice).
+#
+#   agent_kwarg_missing: [kwarg, dotted.path, ...]
+#       Fires when ANY of the listed kwargs is absent (not provided).
+#
+#   agent_kwarg_list_empty: [kwarg, ...]
+#       Fires when ANY of the listed list kwargs is absent or an empty list [].
+#       Use for input_guardrails/output_guardrails presence checks.
+#
+#   agent_kwarg_value:
+#       Fires when the named kwarg equals the given value. String literals have
+#       surrounding quotes stripped before comparison.
+#
+#       kwarg: model_settings.tool_choice   REQUIRED. Supports dotted path.
+#       value: required                     REQUIRED. Value after quote-stripping.
+#
+#   agent_uses_tool_kind: [shell_invocation, mcp_tool, ...]
+#       Fires when any of the agent's resolved ToolRefs has the given ToolKind.
+#       Only resolved (in-repo) tools are checked; External=true refs are skipped.
+#
+#   agent_handoff_to_class: [Agent, SandboxAgent, ...]
+#       Fires when any of the agent's resolved HandoffRefs has the given class.
+#
+#
+# ━━━ REPO-SCOPE PREDICATES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# (used only in scope: repo rules; match runs once per scan)
+#
+#   repo_has_sdk_dep: [openai-agents, claude-agent-sdk, ...]
+#       Fires when RepoProfile.SDKDeps contains a dep with the given name.
+#       Populated by ingestion.Recon from pyproject.toml / requirements.txt etc.
+#
+#   repo_has_sdk_in_code: [openai_agents, claude_agent_sdk, openshell, mcp]
+#       Fires when RepoInventory.SDKsDetected contains the given SDK value.
+#       Derived from actually-observed tool/agent kinds in code (not just deps).
+#
+#   repo_has_agent_class: [Agent, SandboxAgent, AgentDefinition]
+#       Fires when any AgentDef in the inventory has the given class.
+#
+#   repo_has_no_agent_class: [SandboxAgent, ...]
+#       Fires when NO AgentDef in the inventory has the given class. Negation
+#       of repo_has_agent_class; useful for "you have FS tools but no sandbox".
+#
+#   repo_component_present: [mcp_config, hook_script, claude_md, ...]
+#       Fires when any Component in Manifest.Components has the given kind.
+#       Allowed values match models.ComponentKind: mcp_config, claude_md,
+#       claude_settings, subagent, slash_command, hook_script, sandbox_policy,
+#       system_prompt, dependency_manifest, claude_agent_definition.
+#
+#   repo_uses_default_tracing: true | false
+#       Fires when the scanner's derived UsesDefaultTracing flag matches.
+#       UsesDefaultTracing is true when no add_trace_processor or
+#       OPENAI_AGENTS_DISABLE_TRACING appears anywhere in parsed Python files.

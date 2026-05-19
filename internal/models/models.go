@@ -7,26 +7,22 @@ package models
 
 import "math"
 
-// BaseScoreWeight maps severity to the 0–100 flat base score scale.
-// Separate from SeverityWeight (which feeds the readiness formula).
-func BaseScoreWeight(s Severity) float64 {
-	switch s {
-	case SeverityCritical:
-		return 100.0
-	case SeverityHigh:
-		return 75.0
-	case SeverityMedium:
-		return 50.0
-	case SeverityLow:
-		return 25.0
-	default:
-		return 0.0
-	}
-}
+// Scope classifies a rule by the kind of entity it fires against.
+type Scope string
 
-// BaseScore returns the flat 0–100 score for a finding: BaseScoreWeight × Confidence, 1 dp.
-func (f Finding) BaseScore() float64 {
-	return math.Round(BaseScoreWeight(f.Severity)*f.Confidence*10) / 10
+const (
+	ScopeTool  Scope = "tool"
+	ScopeAgent Scope = "agent"
+	ScopeRepo  Scope = "repo"
+)
+
+// ValidScope reports whether s is a known scope value.
+func ValidScope(s Scope) bool {
+	switch s {
+	case ScopeTool, ScopeAgent, ScopeRepo:
+		return true
+	}
+	return false
 }
 
 type Severity string
@@ -56,13 +52,13 @@ func SeverityWeight(s Severity) float64 {
 	}
 }
 
-// DetectorCategory maps to a scanner policy category.
+// DetectorCategory maps to the two AutoFix categories in architecture §0.
 type DetectorCategory string
 
 const (
 	CategoryClaudeSDK DetectorCategory = "claude_sdk"
-	CategoryOpenShell DetectorCategory = "openshell"
 	CategoryOpenAISDK DetectorCategory = "openai_sdk"
+	CategoryOpenShell DetectorCategory = "openshell"
 	CategoryMCP       DetectorCategory = "mcp"
 	CategoryCatalog   DetectorCategory = "catalog"
 )
@@ -72,10 +68,10 @@ type ToolKind string
 
 const (
 	KindClaudeSDKTool   ToolKind = "claude_sdk_tool"
-	KindOpenAITool      ToolKind = "openai_tool"      // OpenAI Agents SDK @function_tool
+	KindOpenAITool      ToolKind = "openai_tool" // OpenAI Agents SDK @function_tool
 	KindMCPTool         ToolKind = "mcp_tool"
-	KindGoogleADKTool   ToolKind = "google_adk_tool"  // Google Agent Development Kit @adk.tool
 	KindShellInvocation ToolKind = "shell_invocation"
+	KindGoogleADKTool   ToolKind = "google_adk_tool" // Google Agent Development Kit @adk.tool
 	KindUnknown         ToolKind = "unknown"
 )
 
@@ -95,17 +91,18 @@ const (
 // ToolDef is one discovered surface that an agent can invoke at runtime.
 // Mirrors the Tool Discovery node in architecture §2.
 type ToolDef struct {
-	Name            string            `json:"name"`
-	Kind            ToolKind          `json:"kind"`
-	Language        Language          `json:"language"`
-	FilePath        string            `json:"file_path"` // relative to repo root
-	Line            int               `json:"line"`
-	EndLine         int               `json:"end_line"`
-	Description     string            `json:"description,omitempty"`
-	HasTypedParams  bool              `json:"has_typed_params"`
-	ParamNames      []string          `json:"param_names,omitempty"`
+	Name           string            `json:"name"`
+	Kind           ToolKind          `json:"kind"`
+	Language       Language          `json:"language"`
+	FilePath       string            `json:"file_path"` // relative to repo root
+	Line           int               `json:"line"`
+	EndLine        int               `json:"end_line"`
+	Description    string            `json:"description,omitempty"`
+	HasTypedParams bool              `json:"has_typed_params"`
+	ParamNames     []string          `json:"param_names,omitempty"`
 	Facts           map[string]string `json:"facts,omitempty"`
-	CapabilityClass string            `json:"capability_class,omitempty"` // from catalog enrichment
+	Config          map[string]string `json:"config,omitempty"` // decorator kwargs
+	CapabilityClass string            `json:"capability_class,omitempty"` // set by catalog enrichment
 }
 
 // ComponentKind labels the type of an agent component the normalizer found
@@ -139,6 +136,22 @@ type AgentComponent struct {
 	Note     string        `json:"note,omitempty"`     // human-readable hint, e.g. "3 tools registered"
 }
 
+// BaseScoreWeight maps severity to the 0–100 flat base score scale.
+func BaseScoreWeight(s Severity) float64 {
+	switch s {
+	case SeverityCritical:
+		return 100.0
+	case SeverityHigh:
+		return 70.0
+	case SeverityMedium:
+		return 40.0
+	case SeverityLow:
+		return 15.0
+	default:
+		return 5.0
+	}
+}
+
 // Finding is one detector hit on one tool.
 type Finding struct {
 	RuleID       string             `json:"rule_id"`
@@ -154,13 +167,18 @@ type Finding struct {
 	FixHints     map[string]any     `json:"fix_hints,omitempty"`
 }
 
+// BaseScore returns the flat 0–100 score for this finding: BaseScoreWeight × Confidence, 1 dp.
+func (f Finding) BaseScore() float64 {
+	return math.Round(BaseScoreWeight(f.Severity)*f.Confidence*10) / 10
+}
+
 // ToolReadiness is the per-tool score from the Scoring Engine.
 type ToolReadiness struct {
 	ToolName         string  `json:"tool_name"`
-	Score            float64 `json:"score"`          // 0..1 readiness
-	MaxBaseScore     float64 `json:"max_base_score"` // 0..10 flat score of worst finding
+	Score            float64 `json:"score"` // 0..1
 	FindingCount     int     `json:"finding_count"`
 	WeightedSeverity float64 `json:"weighted_severity"`
+	MaxBaseScore     float64 `json:"max_base_score"` // 0–100 flat score of worst finding
 }
 
 // ScanManifest is what the Normalizer produces.
@@ -177,6 +195,42 @@ type ScanManifest struct {
 	HasClaudeSDKDependency bool             `json:"has_claude_sdk_dependency"`
 	HasOpenShellArtifact   bool             `json:"has_openshell_artifact"`
 	Components             []AgentComponent `json:"components,omitempty"`
+}
+
+// SDK identifies a tool/agent SDK we know about.
+type SDK string
+
+const (
+	SDKClaudeAgentSDK SDK = "claude_agent_sdk"
+	SDKOpenAIAgents   SDK = "openai_agents"
+	SDKMCP            SDK = "mcp"
+	SDKOpenShell      SDK = "openshell"
+)
+
+type SDKDep struct {
+	Name       string  `json:"name"`
+	Source     string  `json:"source"`
+	Confidence float64 `json:"confidence"`
+}
+
+// RepoProfile is the output of Phase 1 (reconnaissance).
+type RepoProfile struct {
+	Languages []Language   `json:"languages"`
+	SDKDeps   []SDKDep     `json:"sdk_deps"`
+	Manifest  ScanManifest `json:"manifest"`
+}
+
+// RepoInventory is the output of Phase 2a.
+// AgentDef, GuardrailDef, SessionUse, HostedToolDef are in agent.go.
+type RepoInventory struct {
+	Tools              []ToolDef       `json:"tools"`
+	Agents             []AgentDef      `json:"agents"`
+	Guardrails         []GuardrailDef  `json:"guardrails"`
+	Sessions           []SessionUse    `json:"sessions"`
+	HostedTools        []HostedToolDef `json:"hosted_tools"`
+	SDKsDetected       []SDK           `json:"sdks_detected"`
+	Manifest           ScanManifest    `json:"manifest"` // convenience copy for repo-scope predicates
+	UsesDefaultTracing bool            `json:"uses_default_tracing"`
 }
 
 // GeneratedArtifact is a file the generators want to write into the user's repo.
@@ -196,6 +250,6 @@ type ScanResult struct {
 	Findings           []Finding           `json:"findings"`
 	Readiness          []ToolReadiness     `json:"readiness"`
 	OverallScore       float64             `json:"overall_score"`
-	RiskScore          float64             `json:"risk_score"` // 0..10 flat base score of worst finding in scan
+	RiskScore          float64             `json:"risk_score"` // 0–100 flat base score of worst finding
 	GeneratedArtifacts []GeneratedArtifact `json:"generated_artifacts"`
 }

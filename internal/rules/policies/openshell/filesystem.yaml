@@ -9,6 +9,7 @@ policy:
 rules:
   - id: OSH-003
     title: Filesystem write without sandbox restriction
+    scope: tool
     severity: high
     confidence: 0.8
     language: python
@@ -16,7 +17,6 @@ rules:
       - claude_sdk_tool
       - mcp_tool
       - shell_invocation
-    singleton: false
     match:
       has_write_call: true
     explanation: >

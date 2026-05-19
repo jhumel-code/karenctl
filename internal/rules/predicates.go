@@ -5,9 +5,9 @@ import (
 
 	sitter "github.com/smacker/go-tree-sitter"
 
-	"github.com/trustabl/karenctl/internal/analysis"
-	"github.com/trustabl/karenctl/internal/analysis/astutil"
-	"github.com/trustabl/karenctl/internal/models"
+	"github.com/trustabl/trustabl/internal/analysis"
+	"github.com/trustabl/trustabl/internal/analysis/astutil"
+	"github.com/trustabl/trustabl/internal/models"
 )
 
 // ─── bool predicates ─────────────────────────────────────────────────────────
@@ -447,67 +447,183 @@ func normalizedPathParams(fn *sitter.Node, src []byte, pathish map[string]bool) 
 	return out
 }
 
-func PredCallUsesParam(expr CallUsesParamExpr, t models.ToolDef, pf analysis.ParsedFile) bool {
-	root := analysis.FindFunctionNode(t, pf)
-	if root == nil {
-		return false
-	}
-	pathish := make(map[string]struct{})
-	for _, p := range t.ParamNames {
-		if analysis.IsPathishParam(p) {
-			pathish[p] = struct{}{}
-		}
-	}
-	if len(pathish) == 0 {
-		return false
-	}
-	calleeSet := make(map[string]struct{}, len(expr.Callees))
-	for _, c := range expr.Callees {
-		calleeSet[c] = struct{}{}
-	}
-	found := false
-	astutil.Walk(root, func(n *sitter.Node) bool {
-		if found {
-			return false
-		}
-		if n.Type() != "call" {
-			return true
-		}
-		fn := n.ChildByFieldName("function")
-		if fn == nil {
-			return true
-		}
-		callee := astutil.NodeText(fn, pf.Source)
-		matches := false
-		if _, ok := calleeSet[callee]; ok {
-			matches = true
-		}
-		if !matches {
-			for _, pref := range expr.CalleePrefixes {
-				if strings.HasPrefix(callee, pref) {
-					matches = true
-					break
-				}
-			}
-		}
-		if !matches {
-			return true
-		}
-		args := n.ChildByFieldName("arguments")
-		if args == nil {
-			return true
-		}
-		astutil.Walk(args, func(arg *sitter.Node) bool {
-			if arg.Type() == "identifier" {
-				if _, ok := pathish[astutil.NodeText(arg, pf.Source)]; ok {
-					found = true
-					return false
-				}
-			}
-			return true
-		})
-		return !found
-	})
-	return found
+// ─── tool decorator predicates ────────────────────────────────────────────────
+
+func PredToolDecoratorKwargValue(expr ToolDecoratorKwargValueExpr, t models.ToolDef) bool {
+	v, ok := t.Config[expr.Kwarg]
+	return ok && v == expr.Value
 }
+
+func PredToolDecoratorKwargPresent(names []string, t models.ToolDef) bool {
+	for _, n := range names {
+		if _, ok := t.Config[n]; ok {
+			return true
+		}
+	}
+	return false
+}
+
+// ─── agent predicates ─────────────────────────────────────────────────────────
+
+func PredAgentClass(classes []string, a models.AgentDef) bool {
+	for _, c := range classes {
+		if a.Class == c {
+			return true
+		}
+	}
+	return false
+}
+
+// lookupKwarg walks a dotted-path like "model_settings.tool_choice" through
+// the KwargTree. Returns nil if any segment is missing.
+func lookupKwarg(a models.AgentDef, path string) *models.KwargTree {
+	if a.Kwargs == nil {
+		return nil
+	}
+	parts := strings.Split(path, ".")
+	cur := a.Kwargs
+	for _, p := range parts {
+		if cur.Children == nil {
+			return nil
+		}
+		next, ok := cur.Children[p]
+		if !ok {
+			return nil
+		}
+		cur = next
+	}
+	return cur
+}
+
+func PredAgentKwargPresent(paths []string, a models.AgentDef) bool {
+	for _, p := range paths {
+		if lookupKwarg(a, p) != nil {
+			return true
+		}
+	}
+	return false
+}
+
+func PredAgentKwargMissing(paths []string, a models.AgentDef) bool {
+	for _, p := range paths {
+		if lookupKwarg(a, p) == nil {
+			return true
+		}
+	}
+	return false
+}
+
+func PredAgentKwargListEmpty(paths []string, a models.AgentDef) bool {
+	for _, p := range paths {
+		kw := lookupKwarg(a, p)
+		if kw == nil {
+			return true // absent counts as empty
+		}
+		if kw.Value == nil {
+			continue
+		}
+		if kw.Value.Kind == models.ExprList && len(kw.Value.List) == 0 {
+			return true
+		}
+	}
+	return false
+}
+
+func PredAgentKwargValue(expr AgentKwargValueExpr, a models.AgentDef) bool {
+	kw := lookupKwarg(a, expr.Kwarg)
+	if kw == nil || kw.Value == nil {
+		return false
+	}
+	raw := kw.Value.Text
+	if kw.Value.Kind == models.ExprLiteralString {
+		raw = strings.Trim(raw, `"'`)
+	}
+	return raw == expr.Value
+}
+
+func PredAgentUsesToolKind(kinds []string, a models.AgentDef, inv models.RepoInventory) bool {
+	for _, ref := range a.ToolRefs {
+		if ref.Resolved == nil {
+			continue
+		}
+		for _, k := range kinds {
+			if string(ref.Resolved.Kind) == k {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func PredAgentHandoffToClass(classes []string, a models.AgentDef) bool {
+	for _, ref := range a.HandoffRefs {
+		if ref.Resolved == nil {
+			continue
+		}
+		for _, c := range classes {
+			if ref.Resolved.Class == c {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// ─── repo predicates ──────────────────────────────────────────────────────────
+
+func PredRepoHasSDKDep(names []string, p models.RepoProfile) bool {
+	for _, dep := range p.SDKDeps {
+		for _, n := range names {
+			if dep.Name == n {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func PredRepoHasSDKInCode(sdks []string, inv models.RepoInventory) bool {
+	for _, s := range inv.SDKsDetected {
+		for _, want := range sdks {
+			if string(s) == want {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func PredRepoHasAgentClass(classes []string, inv models.RepoInventory) bool {
+	for _, a := range inv.Agents {
+		for _, c := range classes {
+			if a.Class == c {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func PredRepoHasNoAgentClass(classes []string, inv models.RepoInventory) bool {
+	return !PredRepoHasAgentClass(classes, inv)
+}
+
+func PredRepoComponentPresent(kinds []string, p models.RepoProfile) bool {
+	for _, c := range p.Manifest.Components {
+		for _, k := range kinds {
+			if string(c.Kind) == k {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// PredRepoUsesDefaultTracing checks whether the repo uses default OpenAI
+// tracing (no custom add_trace_processor configured). The scanner computes
+// UsesDefaultTracing from parsed source and stores it on the inventory.
+func PredRepoUsesDefaultTracing(want bool, inv models.RepoInventory) bool {
+	return inv.UsesDefaultTracing == want
+}
+
 

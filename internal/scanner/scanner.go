@@ -1,7 +1,7 @@
 // Package scanner is the orchestration layer. It wires
 // ingestion → analysis → generation → review into one Run() call.
 //
-// Why split this out from cmd/karenctl: the CLI is one entry point. A future
+// Why split this out from cmd/trustabl: the CLI is one entry point. A future
 // HTTP server (architecture §1, Public API) or a unit test calls the same
 // Run() and treats it as a pure function over a Config.
 package scanner
@@ -13,12 +13,11 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/trustabl/karenctl/internal/analysis"
-	"github.com/trustabl/karenctl/internal/catalog"
-	"github.com/trustabl/karenctl/internal/generation"
-	"github.com/trustabl/karenctl/internal/ingestion"
-	"github.com/trustabl/karenctl/internal/models"
-	"github.com/trustabl/karenctl/internal/rules"
+	"github.com/trustabl/trustabl/internal/analysis"
+	"github.com/trustabl/trustabl/internal/generation"
+	"github.com/trustabl/trustabl/internal/ingestion"
+	"github.com/trustabl/trustabl/internal/models"
+	"github.com/trustabl/trustabl/internal/rules"
 )
 
 // Config configures one scan. Zero-value is "scan everything, generate everything".
@@ -37,53 +36,61 @@ func Run(cfg Config) (models.ScanResult, error) {
 	}
 	defer src.Cleanup()
 
-	manifest, err := ingestion.Normalize(src)
-	if err != nil {
-		return models.ScanResult{}, fmt.Errorf("normalize: %w", err)
+	repoLabel := src.RemoteURL
+	if repoLabel == "" {
+		repoLabel = src.RootPath
 	}
 
-	tools, parsed, err := analysis.DiscoverTools(manifest)
+	// Phase 1: reconnaissance (cheap, no AST)
+	profile, err := ingestion.Recon(src)
+	if err != nil {
+		return models.ScanResult{}, fmt.Errorf("recon: %w", err)
+	}
+
+	// Phase 2a: per-language inventory (Python only for now)
+	tools, parsed, err := analysis.DiscoverTools(profile.Manifest)
 	if err != nil {
 		return models.ScanResult{}, fmt.Errorf("discover: %w", err)
 	}
+	agents := analysis.DiscoverAgents(parsed)
+	guardrails := analysis.DiscoverGuardrails(parsed)
+	sessions := analysis.DiscoverSessions(parsed)
 
-	// Catalog enrichment: classify each tool by capability class so that
-	// catalog/ policy rules can use capability_class_in predicates.
-	// A missing or malformed catalog is non-fatal — tools just won't be classified.
-	if cat, catErr := catalog.DefaultCatalog(); catErr == nil {
-		for i := range tools {
-			tools[i].CapabilityClass = string(cat.Lookup(tools[i].Name))
-		}
+	inventory := models.RepoInventory{
+		Tools:              tools,
+		Agents:             agents,
+		Guardrails:         guardrails,
+		Sessions:           sessions,
+		Manifest:           profile.Manifest,
+		SDKsDetected:       deriveSDKsDetected(tools, agents),
+		UsesDefaultTracing: computeUsesDefaultTracing(parsed),
 	}
+	analysis.ResolveEdges(&inventory, parsed)
 
-	registry, err := rules.LoadRegistry(rules.DefaultFS())
+	// Phase 2b: policy selection
+	registry, err := rules.LoadFor(rules.DefaultFS(), inventory.SDKsDetected)
 	if err != nil {
 		return models.ScanResult{}, fmt.Errorf("load rules: %w", err)
 	}
 	if len(cfg.Categories) > 0 {
 		registry = registry.Subset(cfg.Categories...)
 	}
-	findings := registry.Run(tools, parsed)
+	metaFindings := SelectAndEmitMETA(profile, inventory)
+
+	// Phase 2c: analysis
+	ruleFindings := registry.Run(profile, inventory, parsed)
+	findings := append(metaFindings, ruleFindings...)
 
 	readiness, overall, riskScore := analysis.Score(tools, findings)
-
-	// Generation. We always run both generators — empty findings just produce
-	// a defaults-only policy and an empty hook scaffolding, which is the
-	// honest output for a clean repo.
 	artifacts := append(
 		generation.GenerateHooks(findings),
 		generation.GeneratePolicy(findings, cfg.Version)...,
 	)
 
-	repoLabel := src.RemoteURL
-	if repoLabel == "" {
-		repoLabel = src.RootPath
-	}
-
 	return models.ScanResult{
-		ScanID:             scanID(repoLabel, manifest),
+		ScanID:             scanID(repoLabel, profile.Manifest),
 		Repo:               repoLabel,
-		Manifest:           manifest,
+		Manifest:           profile.Manifest,
 		Tools:              tools,
 		Findings:           findings,
 		Readiness:          readiness,
@@ -91,6 +98,46 @@ func Run(cfg Config) (models.ScanResult, error) {
 		RiskScore:          riskScore,
 		GeneratedArtifacts: artifacts,
 	}, nil
+}
+
+// deriveSDKsDetected scans the inventory for tool/agent kinds that imply
+// a specific SDK is in use.
+func deriveSDKsDetected(tools []models.ToolDef, agents []models.AgentDef) []models.SDK {
+	seen := make(map[models.SDK]bool)
+	for _, t := range tools {
+		switch t.Kind {
+		case models.KindClaudeSDKTool:
+			seen[models.SDKClaudeAgentSDK] = true
+		case models.KindOpenAITool:
+			seen[models.SDKOpenAIAgents] = true
+		case models.KindMCPTool:
+			seen[models.SDKMCP] = true
+		case models.KindShellInvocation:
+			seen[models.SDKOpenShell] = true
+		}
+	}
+	for _, a := range agents {
+		if a.SDK != "" {
+			seen[a.SDK] = true
+		}
+	}
+	var out []models.SDK
+	for s := range seen {
+		out = append(out, s)
+	}
+	sort.Slice(out, func(i, j int) bool { return out[i] < out[j] })
+	return out
+}
+
+func computeUsesDefaultTracing(parsed []analysis.ParsedFile) bool {
+	for _, pf := range parsed {
+		src := string(pf.Source)
+		if strings.Contains(src, "add_trace_processor") ||
+			strings.Contains(src, "OPENAI_AGENTS_DISABLE_TRACING") {
+			return false
+		}
+	}
+	return true
 }
 
 // scanID is derived from the repo label and the sorted set of Python files so

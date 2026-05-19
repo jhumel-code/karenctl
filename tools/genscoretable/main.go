@@ -19,8 +19,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/trustabl/karenctl/internal/models"
-	"github.com/trustabl/karenctl/internal/rules"
+	"github.com/trustabl/trustabl/internal/models"
+	"github.com/trustabl/trustabl/internal/rules"
 )
 
 const (

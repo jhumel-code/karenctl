@@ -1,6 +1,6 @@
 package rules
 
-import "github.com/trustabl/karenctl/internal/models"
+import "github.com/trustabl/trustabl/internal/models"
 
 // PolicyFile is the top-level structure of a .yaml policy file.
 type PolicyFile struct {
@@ -22,11 +22,11 @@ type PolicyMeta struct {
 type RuleDef struct {
 	ID          string                  `yaml:"id"`
 	Title       string                  `yaml:"title"`
+	Scope       models.Scope            `yaml:"scope"`
 	Severity    models.Severity         `yaml:"severity"`
 	Confidence  float64                 `yaml:"confidence"`
 	Language    models.Language         `yaml:"language,omitempty"`
 	AppliesTo   []string                `yaml:"applies_to"`
-	Singleton   bool                    `yaml:"singleton"`
 	Match       MatchExpr               `yaml:"match"`
 	Explanation string                  `yaml:"explanation"`
 	Fix         string                  `yaml:"fix"`
@@ -58,12 +58,44 @@ type MatchExpr struct {
 	HasBodyText       []string `yaml:"has_body_text,omitempty"`
 	CapabilityClassIn []string `yaml:"capability_class_in,omitempty"`
 
-	// Nested struct predicates
+	// Nested struct predicates (tool scope)
 	ParamNameMatches              *ParamNameMatchExpr                 `yaml:"param_name_matches,omitempty"`
 	CallWithoutKwarg              *CallWithoutKwargExpr               `yaml:"call_without_kwarg,omitempty"`
 	CallWithKwargValue            *CallWithKwargValueExpr             `yaml:"call_with_kwarg_value,omitempty"`
-	CallUsesParam                 *CallUsesParamExpr                  `yaml:"call_uses_param,omitempty"`
-	CallUsesUnnormalizedPathParam *CallUsesUnnormalizedPathParamExpr  `yaml:"call_uses_unnormalized_path_param,omitempty"`
+	CallUsesUnnormalizedPathParam *CallUsesUnnormalizedPathParamExpr `yaml:"call_uses_unnormalized_path_param,omitempty"`
+
+	// Tool-scope decorator predicates
+	ToolDecoratorKwargValue   *ToolDecoratorKwargValueExpr `yaml:"tool_decorator_kwarg_value,omitempty"`
+	ToolDecoratorKwargPresent []string                     `yaml:"tool_decorator_kwarg_present,omitempty"`
+
+	// Agent-scope predicates
+	AgentClass          []string             `yaml:"agent_class,omitempty"`
+	AgentKwargPresent   []string             `yaml:"agent_kwarg_present,omitempty"`
+	AgentKwargMissing   []string             `yaml:"agent_kwarg_missing,omitempty"`
+	AgentKwargListEmpty []string             `yaml:"agent_kwarg_list_empty,omitempty"`
+	AgentKwargValue     *AgentKwargValueExpr `yaml:"agent_kwarg_value,omitempty"`
+	AgentUsesToolKind   []string             `yaml:"agent_uses_tool_kind,omitempty"`
+	AgentHandoffToClass []string             `yaml:"agent_handoff_to_class,omitempty"`
+
+	// Repo-scope predicates
+	RepoHasSDKDep          []string `yaml:"repo_has_sdk_dep,omitempty"`
+	RepoHasSDKInCode       []string `yaml:"repo_has_sdk_in_code,omitempty"`
+	RepoHasAgentClass      []string `yaml:"repo_has_agent_class,omitempty"`
+	RepoHasNoAgentClass    []string `yaml:"repo_has_no_agent_class,omitempty"`
+	RepoComponentPresent   []string `yaml:"repo_component_present,omitempty"`
+	RepoUsesDefaultTracing *bool    `yaml:"repo_uses_default_tracing,omitempty"`
+}
+
+// ToolDecoratorKwargValueExpr matches a decorator kwarg to a specific value.
+type ToolDecoratorKwargValueExpr struct {
+	Kwarg string `yaml:"kwarg"`
+	Value string `yaml:"value"`
+}
+
+// AgentKwargValueExpr matches an agent constructor kwarg (dotted-path) to a value.
+type AgentKwargValueExpr struct {
+	Kwarg string `yaml:"kwarg"`
+	Value string `yaml:"value"` // compared after quote-stripping for string literals
 }
 
 // ParamNameMatchExpr matches parameter names against exact/contains/suffix/prefix patterns.
@@ -86,14 +118,6 @@ type CallWithKwargValueExpr struct {
 	Callees      []string `yaml:"callees,omitempty"`
 	Kwarg        string   `yaml:"kwarg"`
 	Value        string   `yaml:"value"`
-}
-
-// CallUsesParamExpr fires when a matching call receives a path-like param as an arg.
-// Body-wide check: if .resolve()/realpath() appears anywhere, the rule is
-// suppressed entirely. For per-param fidelity use CallUsesUnnormalizedPathParamExpr.
-type CallUsesParamExpr struct {
-	Callees        []string `yaml:"callees,omitempty"`
-	CalleePrefixes []string `yaml:"callee_prefixes,omitempty"`
 }
 
 // CallUsesUnnormalizedPathParamExpr fires when a path-like param flows to an

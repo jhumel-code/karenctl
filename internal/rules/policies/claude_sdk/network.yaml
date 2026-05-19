@@ -10,14 +10,13 @@ policy:
 rules:
   - id: CSDK-003
     title: Network call has no timeout
+    scope: tool
     severity: high
     confidence: 0.85
     language: python
     applies_to:
       - claude_sdk_tool
-      - openai_tool
       - mcp_tool
-    singleton: false
     match:
       call_without_kwarg:
         callees:

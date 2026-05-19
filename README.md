@@ -1,7 +1,4 @@
-# karenctl
-
-> Temporary name. See note in the project tracker about renaming before this leaks
-> into commit history and screenshots.
+# trustabl
 
 Static analyzer for agent reliability. Scans a Claude Agent SDK repo, finds reliability
 weaknesses, emits committable artifacts (Pre/PostToolUse hook configs +
@@ -25,13 +22,35 @@ extracted from them. The rule schema's `language:` field is in place for
 multi-language rule sets when those parsers ship. See
 [ARCHITECTURE.md § 1.1](ARCHITECTURE.md#11-language-scope).
 
+**SDK coverage.** Tool-decorator discovery recognizes Claude Agent SDK
+(`@tool`, `@claude_tool`, `claude_agent_sdk`), OpenAI Agents SDK
+(`@function_tool`), and MCP server registrations (`@server.tool`,
+`@mcp.tool`, `.register_tool`). Shipped detection rules live in
+`internal/rules/policies/claude_sdk/` (CSDK-001–007), `openai_sdk/`
+(OAI-001–201), and `openshell/` (OSH-001–005); each pack's `explanation`
+and `fix` text is scoped to the SDK it targets. Each SDK's agents are
+discovered separately (`kind: openai_agent` vs `claude_agent_definition`)
+and checked only against the rules for that SDK — no cross-SDK casting.
+
+**Test contract.** The `examples/` directory holds real-world agent code
+(Claude SDK demos, OpenAI Agents SDK demos, etc.). It is a corpus, not a
+controlled fixture — well-written agents won't trigger most rules, and
+that's correct. Per-rule fire/silent correctness lives in
+[`internal/rules/policies_test.go`](internal/rules/policies_test.go); the
+end-to-end sweep in
+[`internal/scanner/scanner_test.go`](internal/scanner/scanner_test.go) only
+asserts the scanner doesn't crash on real-world inputs.
+
 The following are intentionally stubbed and called out where they live:
 
 - **LLM enrichment** (`internal/inference/router.go`) — typed BYOK interface, no
   Anthropic call yet. Rule-based detectors run without it.
 - **Confidence scores** — heuristic, not LLM-judged.
-- **Detection-quality benchmark** — no corpus eval (§8 of the architecture doc says
-  you need 20–40 real agent repos before MVP is "done"; this is not that).
+- **Detection-quality benchmark** — no corpus eval. A 20–40 real-agent-repo
+  corpus with labelled findings is the MVP gate (see
+  [ARCHITECTURE.md §10](ARCHITECTURE.md#10-what-is-intentionally-out));
+  the three-layer test strategy in `internal/rules/` and `internal/scanner/`
+  is regression coverage, not detection-quality measurement.
 - **No web app, no API server, no GitHub Action.** This is the CLI surface only.
 
 ## Build
@@ -40,11 +59,11 @@ CGO is required because the Python AST parser uses tree-sitter:
 
 ```bash
 # macOS / Linux
-CGO_ENABLED=1 go build -o karenctl ./cmd/karenctl
+CGO_ENABLED=1 go build -o trustabl ./cmd/trustabl
 
 # Cross-compile: pick a C toolchain for the target. zig is the easiest.
 CGO_ENABLED=1 CC="zig cc -target x86_64-linux-gnu" \
-  GOOS=linux GOARCH=amd64 go build -o karenctl-linux ./cmd/karenctl
+  GOOS=linux GOARCH=amd64 go build -o trustabl-linux ./cmd/trustabl
 ```
 
 This is the cost of using tree-sitter for accurate Python parsing. If single-binary,
@@ -55,34 +74,35 @@ no-CGO distribution becomes a hard requirement later, swap the parser for
 
 ```bash
 # Local repo
-karenctl scan ./path/to/agent-repo
+trustabl scan ./path/to/agent-repo
 
 # GitHub repo (shallow clone to temp dir, removed on exit)
-karenctl scan https://github.com/org/repo
+trustabl scan https://github.com/org/repo
 
 # Restrict detectors
-karenctl scan ./repo --detectors claude_sdk
-karenctl scan ./repo --detectors openshell
-karenctl scan ./repo --detectors claude_sdk,openshell
+trustabl scan ./repo --detectors claude_sdk
+trustabl scan ./repo --detectors openshell
+trustabl scan ./repo --detectors claude_sdk,openshell
 
 # Apply generated artifacts (writes hooks/ and openshell/ into the repo;
 # requires --yes or interactive approval)
-karenctl scan ./repo --apply --yes
+trustabl scan ./repo --apply --yes
 
 # Export the bundle as a ZIP
-karenctl scan ./repo --export bundle.zip
+trustabl scan ./repo --export bundle.zip
 
 # JSON output (for CI piping)
-karenctl scan ./repo --format json
+trustabl scan ./repo --format json
 ```
 
 Exit codes: `0` = no findings ≥ medium, `1` = findings ≥ medium present, `2` =
-scanner error. Comment-only mode in CI never blocks — that's a paid-tier feature
-per architecture §6.
+scanner error. There is no built-in CI integration in this skeleton — pipe
+`--format json` to your own CI logic, or invoke `trustabl scan ./repo` and act
+on the exit code.
 
 ## Produced artifacts
 
-Per §4 of the architecture, the artifacts get committed to the user's repo:
+The generated artifacts get committed to the user's repo:
 
 ```
 <repo>/
@@ -112,30 +132,60 @@ Per §4 of the architecture, the artifacts get committed to the user's repo:
 | Exporter          | `internal/review/export.go`              |
 | Inference Router  | `internal/inference/router.go` (stub)    |
 
-## Detectors shipped in this skeleton
+## Detectors shipped
 
-Naming: `CSDK-NNN` for Claude SDK reliability, `OSH-NNN` for OpenShell policy.
-Rules are defined as YAML in `internal/rules/policies/<category>/<topic>.yaml`
-and embedded into the binary via `go:embed`. To add a rule, drop a new YAML
-entry; no Go code change is required unless the rule needs a new predicate
-primitive (see [ARCHITECTURE.md § 5](ARCHITECTURE.md#5-the-rules-engine-schema-evaluator-embed)).
+Naming: `CSDK-NNN` for Claude Agent SDK reliability, `OAI-NNN` for OpenAI
+Agents SDK, `OSH-NNN` for OpenShell policy. Rules are defined as YAML in
+`internal/rules/policies/<category>/<topic>.yaml` and embedded into the binary
+via `go:embed`. To add a rule, drop a new YAML entry; no Go code change is
+required unless the rule needs a new predicate primitive (see
+[ARCHITECTURE.md § 5](ARCHITECTURE.md#5-the-rules-engine-schema-evaluator-embed)).
 
-| Rule     | Title                                              | Severity | Source file                       |
-| -------- | -------------------------------------------------- | -------- | --------------------------------- |
-| CSDK-001 | Tool function has no docstring / description       | low      | `claude_sdk/tool_definition.yaml` |
-| CSDK-002 | Tool function has no type-annotated params         | medium   | `claude_sdk/tool_definition.yaml` |
-| CSDK-003 | Tool performs network I/O without timeout          | high     | `claude_sdk/network.yaml`         |
-| CSDK-004 | Tool accepts user-supplied path without validation | high     | `claude_sdk/path_safety.yaml`     |
-| CSDK-005 | Tool raises raw exceptions (no error contract)     | medium   | `claude_sdk/error_handling.yaml`  |
-| CSDK-006 | Tool with side-effects has no idempotency hint     | medium   | `claude_sdk/idempotency.yaml`     |
-| CSDK-007 | Ambiguous tool name (`process`, `handle`, ...)     | low      | `claude_sdk/tool_definition.yaml` |
-| OSH-001  | `subprocess` call with `shell=True`                | critical | `openshell/shell.yaml`            |
-| OSH-002  | Shell tool without allowed-command list            | high     | `openshell/shell.yaml`            |
-| OSH-003  | Filesystem write without path restriction          | high     | `openshell/filesystem.yaml`       |
-| OSH-004  | No resource limits configured                      | medium   | `openshell/resources.yaml`        |
-| OSH-005  | Broad network egress (no host allowlist)           | high     | `openshell/network.yaml`          |
+**Claude Agent SDK (tool scope)**
 
-This is 12 detectors against the architecture's "15 reliability checks" headline.
-Three more are easy adds once corpus data tells you which patterns produce
-real findings vs false positives. Resist the urge to ship more rules without
-that data.
+| Rule     | Title                                              | Severity |
+| -------- | -------------------------------------------------- | -------- |
+| CSDK-001 | Tool function has no docstring / description       | low      |
+| CSDK-002 | Tool function has no type-annotated params         | medium   |
+| CSDK-003 | Tool performs network I/O without timeout          | high     |
+| CSDK-004 | Tool accepts user-supplied path without validation | high     |
+| CSDK-005 | Tool raises raw exceptions (no error contract)     | medium   |
+| CSDK-006 | Tool with side-effects has no idempotency hint     | medium   |
+| CSDK-007 | Ambiguous tool name (`process`, `handle`, ...)     | low      |
+
+**OpenAI Agents SDK (tool scope)**
+
+| Rule    | Title                                                  | Severity |
+| ------- | ------------------------------------------------------ | -------- |
+| OAI-001 | Tool function has no docstring                         | low      |
+| OAI-002 | Tool has no type-annotated parameters                  | medium   |
+| OAI-003 | `@function_tool(strict_mode=False)` — schema not enforced | medium |
+| OAI-004 | No `failure_error_function` — errors propagate raw     | medium   |
+| OAI-005 | HTTP call without `timeout=`                           | high     |
+| OAI-006 | Path-like param passed to I/O without normalization    | high     |
+
+**OpenAI Agents SDK (agent scope)**
+
+| Rule    | Title                                                         | Severity |
+| ------- | ------------------------------------------------------------- | -------- |
+| OAI-101 | Agent with shell tools and no `input_guardrails`              | high     |
+| OAI-102 | `tool_use_behavior="stop_on_first_tool"` — stops after one call | medium |
+| OAI-103 | `tool_choice=required` + `reset_tool_choice=False` — loop risk | high   |
+| OAI-104 | Bare `Agent` (not `SandboxAgent`) with shell-invoking tools   | high     |
+| OAI-105 | Agent uses MCP servers without `input_guardrails`             | high     |
+
+**OpenAI Agents SDK (repo scope)**
+
+| Rule    | Title                                                | Severity |
+| ------- | ---------------------------------------------------- | -------- |
+| OAI-201 | No custom trace processor configured                 | medium   |
+
+**OpenShell**
+
+| Rule    | Title                                              | Severity |
+| ------- | -------------------------------------------------- | -------- |
+| OSH-001 | `subprocess` call with `shell=True`                | critical |
+| OSH-002 | Shell tool without allowed-command list            | high     |
+| OSH-003 | Filesystem write without path restriction          | high     |
+| OSH-004 | No resource limits configured (repo scope)         | medium   |
+| OSH-005 | Broad network egress (no host allowlist)           | high     |

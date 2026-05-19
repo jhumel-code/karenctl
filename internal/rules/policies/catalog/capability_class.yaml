@@ -20,7 +20,7 @@ rules:
       - mcp_tool
       - google_adk_tool
       - shell_invocation
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:
@@ -57,7 +57,7 @@ rules:
       - mcp_tool
       - google_adk_tool
       - shell_invocation
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:
@@ -92,7 +92,7 @@ rules:
       - mcp_tool
       - google_adk_tool
       - shell_invocation
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:
@@ -127,7 +127,7 @@ rules:
       - openai_tool
       - mcp_tool
       - google_adk_tool
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:
@@ -161,7 +161,7 @@ rules:
       - openai_tool
       - mcp_tool
       - google_adk_tool
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:
@@ -197,7 +197,7 @@ rules:
       - openai_tool
       - mcp_tool
       - google_adk_tool
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:
@@ -232,7 +232,7 @@ rules:
       - openai_tool
       - mcp_tool
       - google_adk_tool
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:
@@ -266,7 +266,7 @@ rules:
       - openai_tool
       - mcp_tool
       - google_adk_tool
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:
@@ -300,7 +300,7 @@ rules:
       - openai_tool
       - mcp_tool
       - google_adk_tool
-    singleton: false
+    scope: tool
     match:
       all:
         - capability_class_in:

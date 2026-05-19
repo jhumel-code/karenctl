@@ -86,39 +86,49 @@ finding for that tool.
 
 | ID | Title | Sev | Conf | Score |
 |----|-------|-----|------|-------|
-| CSDK-001 | Tool has no description                            | Low      | 0.95 |  23.8 |
-| CSDK-002 | Tool parameters are not type-annotated             | Medium   | 0.90 |  45.0 |
-| CSDK-003 | Network call has no timeout                        | High     | 0.85 |  63.8 |
-| CSDK-004 | Path parameter used in I/O without validation      | High     | 0.70 |  52.5 |
-| CSDK-005 | Tool raises exceptions without a structured error contract | Medium   | 0.60 |  30.0 |
-| CSDK-006 | Mutating tool has no idempotency key               | Medium   | 0.55 |  27.5 |
-| CSDK-007 | Ambiguous tool name                                | Low      | 0.90 |  22.5 |
+| CSDK-001 | Tool has no description                            | Low      | 0.95 |  14.3 |
+| CSDK-002 | Tool parameters are not type-annotated             | Medium   | 0.90 |  36.0 |
+| CSDK-003 | Network call has no timeout                        | High     | 0.85 |  59.5 |
+| CSDK-004 | Path parameter used in I/O without validation      | High     | 0.70 |  49.0 |
+| CSDK-005 | Tool raises exceptions without a structured error contract | Medium   | 0.60 |  24.0 |
+| CSDK-006 | Mutating tool has no idempotency key               | Medium   | 0.55 |  22.0 |
+| CSDK-007 | Ambiguous tool name                                | Low      | 0.90 |  13.5 |
 
 ### OpenShell (OSH)
 
 | ID | Title | Sev | Conf | Score |
 |----|-------|-----|------|-------|
 | OSH-001  | subprocess called with shell=True                  | Critical | 0.99 |  99.0 |
-| OSH-002  | Shell invocation without an allowed-command list   | High     | 0.85 |  63.8 |
-| OSH-003  | Filesystem write without sandbox restriction       | High     | 0.80 |  60.0 |
-| OSH-004  | No OpenShell resource limits configured            | Medium   | 0.95 |  47.5 |
-| OSH-005  | Network egress is unrestricted                     | High     | 0.70 |  52.5 |
+| OSH-002  | Shell invocation without an allowed-command list   | High     | 0.85 |  59.5 |
+| OSH-003  | Filesystem write without sandbox restriction       | High     | 0.80 |  56.0 |
+| OSH-004  | No OpenShell resource limits configured            | Medium   | 0.95 |  38.0 |
+| OSH-005  | Network egress is unrestricted                     | High     | 0.70 |  49.0 |
 
 ### OpenAI Agents SDK (OAIS)
 
 | ID | Title | Sev | Conf | Score |
 |----|-------|-----|------|-------|
-| OAIS-001 | OpenAI tool has no description                     | Low      | 0.95 |  23.8 |
-| OAIS-002 | OpenAI tool parameters are not type-annotated      | Medium   | 0.90 |  45.0 |
-| OAIS-005 | OpenAI tool raises exceptions without a structured error contract | Medium   | 0.60 |  30.0 |
-| OAIS-006 | Mutating OpenAI tool has no idempotency key        | Medium   | 0.55 |  27.5 |
-| OAIS-007 | Ambiguous OpenAI tool name                         | Low      | 0.90 |  22.5 |
+| OAI-003  | Tool sets strict_mode=False                        | Medium   | 0.95 |  38.0 |
+| OAI-004  | Tool has no failure_error_function                 | Medium   | 0.70 |  28.0 |
+| OAI-005  | Network call has no timeout                        | High     | 0.85 |  59.5 |
+| OAI-006  | Tool accepts path without normalization            | High     | 0.70 |  49.0 |
+| OAI-101  | Agent has no input_guardrails AND wires shell or filesystem-touching tools | High     | 0.85 |  59.5 |
+| OAI-102  | Agent uses tool_use_behavior="stop_on_first_tool"  | High     | 0.95 |  66.5 |
+| OAI-103  | tool_choice="required" combined with reset_tool_choice=False | High     | 0.95 |  66.5 |
+| OAI-104  | Raw Agent (not SandboxAgent) wires shell or filesystem-touching tools | Medium   | 0.75 |  30.0 |
+| OAI-105  | Agent has mcp_servers configured AND no input_guardrails | High     | 0.85 |  59.5 |
+| OAI-201  | Project uses default OpenAI tracing                | Medium   | 0.80 |  32.0 |
+| OAIS-001 | OpenAI tool has no description                     | Low      | 0.95 |  14.3 |
+| OAIS-002 | OpenAI tool parameters are not type-annotated      | Medium   | 0.90 |  36.0 |
+| OAIS-005 | OpenAI tool raises exceptions without a structured error contract | Medium   | 0.60 |  24.0 |
+| OAIS-006 | Mutating OpenAI tool has no idempotency key        | Medium   | 0.55 |  22.0 |
+| OAIS-007 | Ambiguous OpenAI tool name                         | Low      | 0.90 |  13.5 |
 
 ### MCP (MCP)
 
 | ID | Title | Sev | Conf | Score |
 |----|-------|-----|------|-------|
-| MCP-001  | MCP tool accepts injection-prone parameter names   | High     | 0.75 |  56.3 |
+| MCP-001  | MCP tool accepts injection-prone parameter names   | High     | 0.75 |  52.5 |
 | MCP-002  | MCP tool contains eval or exec call                | Critical | 0.90 |  90.0 |
 | MCP-003  | MCP tool deserializes data with pickle or marshal  | Critical | 0.95 |  95.0 |
 
@@ -128,13 +138,13 @@ finding for that tool.
 |----|-------|-----|------|-------|
 | CATL-001 | Code execution tool has no sandbox guard           | Critical | 0.80 |  80.0 |
 | CATL-002 | Shell execution tool has no command allowlist      | Critical | 0.80 |  80.0 |
-| CATL-003 | File write tool has no path validation             | High     | 0.75 |  56.3 |
-| CATL-004 | Agent spawn tool has no privilege scoping guard    | High     | 0.70 |  52.5 |
-| CATL-005 | Auth tool has no secure credential handling        | High     | 0.70 |  52.5 |
+| CATL-003 | File write tool has no path validation             | High     | 0.75 |  52.5 |
+| CATL-004 | Agent spawn tool has no privilege scoping guard    | High     | 0.70 |  49.0 |
+| CATL-005 | Auth tool has no secure credential handling        | High     | 0.70 |  49.0 |
 | CATL-006 | Computer use tool has no confirmation gate         | Critical | 0.75 |  75.0 |
-| CATL-007 | Data mutation tool has no dry-run or rollback support | Medium   | 0.65 |  32.5 |
-| CATL-008 | External API tool has no rate limit guard          | Medium   | 0.60 |  30.0 |
-| CATL-009 | Memory write tool has no size or scope limit       | Low      | 0.60 |  15.0 |
+| CATL-007 | Data mutation tool has no dry-run or rollback support | Medium   | 0.65 |  26.0 |
+| CATL-008 | External API tool has no rate limit guard          | Medium   | 0.60 |  24.0 |
+| CATL-009 | Memory write tool has no size or scope limit       | Low      | 0.60 |   9.0 |
 
 ---
 
@@ -143,16 +153,19 @@ finding for that tool.
 ```
 90–100   █████████  OSH-001 (99.0), MCP-002 (90.0), MCP-003 (95.0)
 70– 89   █████████  CATL-001 (80.0), CATL-002 (80.0), CATL-006 (75.0)
-40– 69   ████████████████████████████████████
-           CSDK-002 (45.0), CSDK-003 (63.8), CSDK-004 (52.5)
-           OSH-002 (63.8), OSH-003 (60.0), OSH-004 (47.5)
-           OSH-005 (52.5), OAIS-002 (45.0), MCP-001 (56.3)
-           CATL-003 (56.3), CATL-004 (52.5), CATL-005 (52.5)
-10– 39   █████████████████████████████████
-           CSDK-001 (23.8), CSDK-005 (30.0), CSDK-006 (27.5)
-           CSDK-007 (22.5), OAIS-001 (23.8), OAIS-005 (30.0)
-           OAIS-006 (27.5), OAIS-007 (22.5), CATL-007 (32.5)
-           CATL-008 (30.0), CATL-009 (15.0)
+40– 69   █████████████████████████████████████████████
+           CSDK-003 (59.5), CSDK-004 (49.0), OSH-002 (59.5)
+           OSH-003 (56.0), OSH-005 (49.0), OAI-005 (59.5)
+           OAI-006 (49.0), OAI-101 (59.5), OAI-102 (66.5)
+           OAI-103 (66.5), OAI-105 (59.5), MCP-001 (52.5)
+           CATL-003 (52.5), CATL-004 (49.0), CATL-005 (49.0)
+10– 39   ████████████████████████████████████████████████
+           CSDK-001 (14.3), CSDK-002 (36.0), CSDK-005 (24.0)
+           CSDK-006 (22.0), CSDK-007 (13.5), OSH-004 (38.0)
+           OAI-003 (38.0), OAI-004 (28.0), OAI-104 (30.0)
+           OAI-201 (32.0), OAIS-001 (14.3), OAIS-002 (36.0)
+           OAIS-005 (24.0), OAIS-006 (22.0), OAIS-007 (13.5)
+           CATL-007 (26.0), CATL-008 (24.0)
 ```
 <!-- score-table:end -->
 

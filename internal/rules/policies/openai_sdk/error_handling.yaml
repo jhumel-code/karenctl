@@ -15,7 +15,7 @@ rules:
     language: python
     applies_to:
       - openai_tool
-    singleton: false
+    scope: tool
     match:
       all:
         - has_raise: true

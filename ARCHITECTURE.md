@@ -1,6 +1,6 @@
 # Architecture
 
-This document describes the concrete architecture of the karenctl codebase as it
+This document describes the concrete architecture of the trustabl codebase as it
 exists today. It is the implementer's reference: what each package owns, the
 data that crosses package boundaries, and the decisions that shaped the layout.
 
@@ -11,7 +11,7 @@ this file is scoped to the Go binary in this repository.
 
 ## 1. Goal
 
-karenctl scans a Claude Agent SDK repository, finds reliability weaknesses in
+trustabl scans a Claude Agent SDK repository, finds reliability weaknesses in
 its tool definitions, and emits committable artifacts that close those gaps:
 
 - `hooks/pretooluse_validate.py` and `hooks/posttooluse_log.py` — Claude Agent
@@ -26,7 +26,7 @@ scope for this skeleton (see `README.md` § Status).
 
 ## 1.1 Language scope
 
-karenctl ships with **Python tool discovery** wired in. The scanner can also
+trustabl ships with **Python tool discovery** wired in. The scanner can also
 recognize TypeScript, JavaScript, and Go *files* (they appear in
 `manifest.typescript_files` etc. and feed component discovery), but no AST
 parser for those languages is plumbed in yet — so no tools are extracted
@@ -55,54 +55,72 @@ infrastructure carries over for free when language #2 ships.
 
 ## 2. Pipeline
 
-The scan is a one-shot pipeline. There is no concurrency between stages and no
+The scan is a staged pipeline. There is no concurrency between stages and no
 state shared across runs. `scanner.Run` ([internal/scanner/scanner.go](internal/scanner/scanner.go))
-calls each stage in order; the output of one is the input to the next.
+calls each phase in order; the output of one is the typed input to the next.
 
 ```
 target (path or URL)
     │
     ▼
-┌──────────────┐
-│  Importer    │  ingestion.Resolve   → *Source       (clones if remote)
-├──────────────┤
-│  Normalizer  │  ingestion.Normalize → ScanManifest  (file inventory)
-├──────────────┤
-│  Discovery   │  analysis.DiscoverTools → []ToolDef + []ParsedFile
-├──────────────┤
-│  Detectors   │  detectors.Registry.Run → []Finding
-├──────────────┤
-│  Scoring     │  analysis.Score → []ToolReadiness, OverallScore
-├──────────────┤
-│  Generation  │  generation.GenerateHooks + GeneratePolicy → []GeneratedArtifact
-├──────────────┤
-│  Review      │  review.Renderer / ApplyArtifacts / ExportZIP
-└──────────────┘
+PHASE 1 — Reconnaissance (ingestion.Recon)
+  Output: RepoProfile {Languages, SDKDeps, Manifest, Components}
+    │
+    ▼
+PHASE 2a — Inventory (analysis.DiscoverTools, DiscoverAgents,
+                       DiscoverGuardrails, DiscoverSessions, ResolveEdges)
+  Output: RepoInventory {Tools, Agents, Guardrails, Sessions, SDKsDetected,
+                          UsesDefaultTracing}
+    │
+    ▼
+PHASE 2b — Policy selection (rules.LoadFor + SelectAndEmitMETA)
+  Loads policy packs matching SDKsDetected; emits META-001/002/003 findings
+    │
+    ▼
+PHASE 2c — Analysis (detectors.Registry.Run)
+  ToolDetectors fire per inv.Tools entry
+  AgentDetectors fire per inv.Agents entry
+  RepoDetectors fire once per scan
+    │
+    ▼
+Scoring → Generation → Review
     │
     ▼
 ScanResult  (JSON-serializable, returned to the CLI)
 ```
 
-### Stage 1 — Importer ([internal/ingestion/importer.go](internal/ingestion/importer.go))
+### Phase 1 — Reconnaissance ([internal/ingestion/normalizer.go](internal/ingestion/normalizer.go))
 
-Resolves a CLI target string to a directory on disk. Local paths pass through;
-URLs and `git@host:owner/repo` shorthand are shallow-cloned to a temp dir using
-`go-git`. The returned `Source` carries a `Cleanup()` callback the caller MUST
-defer; for local targets it is a no-op so call sites don't need a branching
-defer.
+`ingestion.Resolve` resolves a CLI target to a directory on disk (cloning
+remote repos). `ingestion.Recon` then walks the source tree and returns a
+`RepoProfile`:
 
-### Stage 2 — Normalizer ([internal/ingestion/normalizer.go](internal/ingestion/normalizer.go))
+- **Languages** detected (by file extension).
+- **SDK dependencies declared** — text search in `pyproject.toml` /
+  `requirements.txt` / `Pipfile` / `poetry.lock` / `package.json` / `go.mod`
+  for known SDK package names. Each hit becomes a typed `SDKDep{Name, Source}`.
+- **`ScanManifest`** — per-language file paths and discovered agent components.
 
-Walks the source tree, collecting per-language file paths
-(`PythonFiles`, `TypeScriptFiles`, `JavaScriptFiles`, plus `YAMLFiles`,
-`JSONFiles`, `MarkdownFiles`) and producing two kinds of metadata:
+Phase 1 must stay cheap. No tree-sitter parses here.
 
-**Manifest-level signals.**
+### Phase 2a — Inventory ([internal/analysis/](internal/analysis/))
 
-- `HasClaudeSDKDependency` — text search in pyproject.toml / requirements.txt /
-  Pipfile / poetry.lock for SDK markers.
-- `HasOpenShellArtifact` — presence of an `openshell/` dir or a YAML file
-  declaring `openshell.nvidia.com/v…`.
+For each language Phase 1 cleared, do the AST work and produce a `RepoInventory`:
+
+- **DiscoverTools** (`discovery.go`) — two-pass Python discovery (decorated
+  functions and bare shell-invoking functions). Also captures decorator kwargs
+  into `ToolDef.Config` for rules that inspect `@function_tool(strict_mode=...)`.
+- **DiscoverAgents** (`agents.go`) — finds `Agent(...)` / `SandboxAgent(...)` /
+  `AgentDefinition(...)` constructor calls; captures all constructor kwargs into
+  a typed `KwargTree`; sets `Opaque=true` for `Agent(**config)` or
+  `tools=<non-literal>`.
+- **DiscoverGuardrails** — finds `@input_guardrail` / `@output_guardrail`
+  decorated functions.
+- **DiscoverSessions** — finds construction sites for `*Session` classes from
+  the agents SDK.
+- **ResolveEdges** — links agent `tools=`, `handoffs=`, `input_guardrails=`
+  references to discovered definitions in the same repo; cross-module resolution
+  uses import statements; unresolvable references are flagged `External=true`.
 
 **Discovered agent components** (`Components []AgentComponent`).
 
@@ -121,6 +139,7 @@ tools. Component kinds:
 | `sandbox_policy`      | `openshell/*.yaml` / `openshell/*.yml`                         |
 | `system_prompt`       | `prompts/*.md`, `system_prompt.md`, `system_prompt.txt` (root) |
 | `dependency_manifest` | `pyproject.toml`, `requirements.txt`, `Pipfile`, `poetry.lock`, `package.json`, `go.mod` |
+| `claude_agent_definition` | Python file importing `claude_agent_sdk` AND containing an `AgentDefinition(` call |
 
 Each `AgentComponent` carries `Path` (relative to repo root, normalized to
 forward slashes) and `Language` (set for code components, empty for
@@ -134,22 +153,33 @@ deliberately-included agent-config directory.
 Manifest fields are emitted as JSON in `ScanResult.manifest` for CI consumers;
 the Go pipeline does not currently branch on them.
 
-### Stage 3 — Tool Discovery ([internal/analysis/discovery.go](internal/analysis/discovery.go))
+#### Discovery detail ([internal/analysis/discovery.go](internal/analysis/discovery.go))
 
 Two-pass discovery over each Python file. tree-sitter is used because we need
 structural recognition (decorator nodes, function bodies, call shapes) rather
 than just text matching.
 
-1. **Decorated functions.** Decorator text is inspected in priority order to
-   avoid misclassification:
-   - `@function_tool` → `KindOpenAITool` (OpenAI Agents SDK)
-   - `@adk.tool`, `@genai.tool`, `google.adk` → `KindGoogleADKTool` (Google ADK)
-   - `@tool`, `@claude_tool`, `@agent.tool`, `claude_agent_sdk` → `KindClaudeSDKTool`
-   - `@server.tool`, `@mcp.tool`, `.register_tool` → `KindMCPTool`
-   - Anything else → `KindUnknown` (eligible for shell discovery below)
+1. **Decorated functions.** A `decorated_definition` is classified by the
+   decorator-substring matcher in `kindFromDecorators`:
+
+   | Pattern in decorator text         | ToolKind              | Notes                       |
+   | --------------------------------- | --------------------- | --------------------------- |
+   | `@function_tool` (any args)       | `KindOpenAITool`      | OpenAI Agents SDK           |
+   | `@tool`, `@claude_tool`, `@agent.tool`, `claude_agent_sdk` | `KindClaudeSDKTool` | Claude Agent SDK (pre-1.0 — names still in flux) |
+   | `@server.tool`, `@mcp.tool`, `.register_tool` | `KindMCPTool`         | MCP server registrations    |
+   | (none of the above)               | `KindUnknown`         | Falls through to shell pass |
+
+   Order matters: `@function_tool` is matched before `@tool` so the broader
+   substring doesn't capture the more specific OpenAI decorator. Discovery
+   is conservative — when in doubt, return `KindUnknown` and let the
+   function be considered for shell discovery.
+
 2. **Bare functions that shell out.** Any `function_definition` not already
    captured above whose body calls `subprocess.*`, `os.system`, or `os.popen`
    is a `KindShellInvocation`. These feed the OpenShell detectors.
+
+Each `ToolDef` carries `Language: python` (set unconditionally today —
+discovery is python-only).
 
 The function's docstring is extracted via `astutil.FunctionDocstring`, which
 calls `stripPythonStringLiteral` to handle prefixes (r/b/u/f and 2-char
@@ -158,21 +188,41 @@ combinations) and triple-vs-single quote markers. Parameter names come from
 any parameter is type-annotated (`typed_parameter` or `typed_default_parameter`
 in tree-sitter terms).
 
-### Stage 4 — Detectors ([internal/rules/](internal/rules/) + [internal/analysis/detectors/](internal/analysis/detectors/))
+### Phase 2c — Analysis ([internal/rules/](internal/rules/) + [internal/analysis/detectors/](internal/analysis/detectors/))
 
-Detection is **YAML-driven**. The `internal/analysis/detectors` package now
-owns only the `Detector` interface and the `Registry` runtime; concrete
-detectors are produced by `internal/rules` from embedded YAML policy files.
+Detection is **YAML-driven**. The `internal/analysis/detectors` package owns
+three typed interfaces and the `Registry` runtime; concrete detectors are
+produced by `internal/rules` from embedded YAML policy files.
 
 ```go
-type Detector interface {
+// ToolDetector fires against one ToolDef at a time.
+type ToolDetector interface {
     RuleID() string
     Category() models.DetectorCategory
-    Applies(tool models.ToolDef) bool
-    Detect(tool models.ToolDef, pf analysis.ParsedFile) []models.Finding
-    Singleton() bool
+    Applies(models.ToolDef) bool
+    Detect(models.ToolDef, analysis.ParsedFile, models.RepoInventory) []models.Finding
+}
+
+// AgentDetector fires against one AgentDef at a time.
+type AgentDetector interface {
+    RuleID() string
+    Category() models.DetectorCategory
+    Applies(models.AgentDef) bool
+    Detect(models.AgentDef, models.RepoInventory) []models.Finding
+}
+
+// RepoDetector fires once per scan against the profile + inventory.
+type RepoDetector interface {
+    RuleID() string
+    Category() models.DetectorCategory
+    Applies(models.RepoProfile, models.RepoInventory) bool
+    Detect(models.RepoProfile, models.RepoInventory) []models.Finding
 }
 ```
+
+`Registry.Run(profile, inv, parsed)` iterates all three slices: ToolDetectors
+fire per `inv.Tools`, AgentDetectors per `inv.Agents`, RepoDetectors once.
+Findings are sorted deterministically by `(RuleID, FilePath, Line)`.
 
 Pipeline at startup:
 
@@ -180,55 +230,49 @@ Pipeline at startup:
    `internal/rules/policies/`.
 2. `rules.LoadRegistry(fsys)` walks recursively, decodes every `.yaml` file,
    validates required fields / enums / cross-file rule-ID uniqueness, then
-   wraps each `RuleDef` in a `RuleDetector`.
-3. `RuleDetector.Detect` evaluates the rule's `MatchExpr` against the tool;
-   on a match it emits one `Finding` populated from the rule's metadata.
+   wraps each `RuleDef` as a `ToolRuleDetector`, `AgentRuleDetector`, or
+   `RepoRuleDetector` based on the rule's `scope:` field.
+3. Each detector's `Detect` evaluates the rule's `MatchExpr` against the
+   typed input; on a match it emits one `Finding` populated from the rule's
+   metadata.
 
 Discipline: rule evaluation is pure (no I/O, no clocks); predicates may walk
 the AST. Every `Finding` MUST carry an `Explanation`, `SuggestedFix`, and
 `Confidence` — the YAML schema requires those fields, so the loader rejects a
 rule that omits them.
 
-The `Registry` ([detector.go](internal/analysis/detectors/detector.go))
-supports `Subset(...categories)` for `--detectors` filtering and runs
-detectors in stable order (detector-stable then tool-stable) so output is
-reproducible. `Singleton` detectors fire at most once per scan — used by
-manifest-level checks like `OSH-004` (no resource limits configured) that
-have no per-tool variation.
+The `Registry` supports `Subset(...categories)` for `--detectors` filtering.
+Output is reproducible: detectors run in stable order, findings sorted by
+`(RuleID, FilePath, Line)`.
 
 Shipped rules (one row per YAML rule entry):
 
-| Rule     | Category   | Severity | Source file                             | Notes                                                  |
-| -------- | ---------- | -------- | --------------------------------------- | ------------------------------------------------------ |
-| CSDK-001 | claude_sdk | low      | `claude_sdk/tool_definition.yaml`       | Missing docstring / description                        |
-| CSDK-002 | claude_sdk | medium   | `claude_sdk/tool_definition.yaml`       | Untyped parameters                                     |
-| CSDK-003 | claude_sdk | high     | `claude_sdk/network.yaml`               | HTTP call without `timeout=` kwarg (also fires on openai_tool) |
-| CSDK-004 | claude_sdk | high     | `claude_sdk/path_safety.yaml`           | Path-like param flows to I/O without per-param `.resolve()`/`realpath()` (also openai_tool) |
-| CSDK-005 | claude_sdk | medium   | `claude_sdk/error_handling.yaml`        | Raises with no try/except wrapping                     |
-| CSDK-006 | claude_sdk | medium   | `claude_sdk/idempotency.yaml`           | Mutating verb in name + no idempotency-key param       |
-| CSDK-007 | claude_sdk | low      | `claude_sdk/tool_definition.yaml`       | Ambiguous name (`process`, `handle`, `run`, …)         |
-| OSH-001  | openshell  | critical | `openshell/shell.yaml`                  | `subprocess(..., shell=True)`                          |
-| OSH-002  | openshell  | high     | `openshell/shell.yaml`                  | Shell call without `ALLOWED_COMMANDS` allowlist        |
-| OSH-003  | openshell  | high     | `openshell/filesystem.yaml`             | `open(..., "w")` / `shutil.move`/`rmtree` etc.         |
-| OSH-004  | openshell  | medium   | `openshell/resources.yaml`              | Singleton: no resource limits configured anywhere      |
-| OSH-005  | openshell  | high     | `openshell/network.yaml`                | HTTP call with dynamic URL + no host allowlist         |
-| OAIS-001 | openai_sdk | low      | `openai_sdk/tool_definition.yaml`       | OpenAI @function_tool missing docstring                |
-| OAIS-002 | openai_sdk | medium   | `openai_sdk/tool_definition.yaml`       | OpenAI @function_tool untyped parameters               |
-| OAIS-005 | openai_sdk | medium   | `openai_sdk/error_handling.yaml`        | OpenAI @function_tool raises without try/except        |
-| OAIS-006 | openai_sdk | medium   | `openai_sdk/idempotency.yaml`           | OpenAI @function_tool mutating verb + no idempotency key |
-| OAIS-007 | openai_sdk | low      | `openai_sdk/tool_definition.yaml`       | OpenAI @function_tool ambiguous name                   |
-| MCP-001  | mcp        | high     | `mcp/injection.yaml`                    | MCP tool accepts injection-prone param names (cmd, command, exec) |
-| MCP-002  | mcp        | critical | `mcp/injection.yaml`                    | MCP tool contains eval()/exec()/compile() call         |
-| MCP-003  | mcp        | critical | `mcp/injection.yaml`                    | MCP tool uses pickle.loads / marshal.loads             |
-| CATL-001 | catalog    | critical | `catalog/capability_class.yaml`         | Code execution tool has no sandbox guard               |
-| CATL-002 | catalog    | critical | `catalog/capability_class.yaml`         | Shell execution tool has no command allowlist          |
-| CATL-003 | catalog    | high     | `catalog/capability_class.yaml`         | File write tool has no path validation                 |
-| CATL-004 | catalog    | high     | `catalog/capability_class.yaml`         | Agent spawn tool has no privilege scoping              |
-| CATL-005 | catalog    | high     | `catalog/capability_class.yaml`         | Auth tool has no secure credential handling            |
-| CATL-006 | catalog    | critical | `catalog/capability_class.yaml`         | Computer use tool has no confirmation gate             |
-| CATL-007 | catalog    | medium   | `catalog/capability_class.yaml`         | Data mutation tool has no dry-run or rollback          |
-| CATL-008 | catalog    | medium   | `catalog/capability_class.yaml`         | External API tool has no rate limit guard              |
-| CATL-009 | catalog    | low      | `catalog/capability_class.yaml`         | Memory write tool has no size or scope limit           |
+| Rule    | Scope | Category   | Severity | Source file                              | Notes                                                               |
+| ------- | ----- | ---------- | -------- | ---------------------------------------- | ------------------------------------------------------------------- |
+| CSDK-001 | tool | claude_sdk | low      | `claude_sdk/tool_definition.yaml`        | Missing docstring / description                                     |
+| CSDK-002 | tool | claude_sdk | medium   | `claude_sdk/tool_definition.yaml`        | Untyped parameters                                                  |
+| CSDK-003 | tool | claude_sdk | high     | `claude_sdk/network.yaml`                | HTTP call without `timeout=` kwarg                                  |
+| CSDK-004 | tool | claude_sdk | high     | `claude_sdk/path_safety.yaml`            | Path-like param flows to I/O without `.resolve()`/`realpath()`     |
+| CSDK-005 | tool | claude_sdk | medium   | `claude_sdk/error_handling.yaml`         | Raises with no try/except wrapping                                  |
+| CSDK-006 | tool | claude_sdk | medium   | `claude_sdk/idempotency.yaml`            | Mutating verb in name + no idempotency-key param                    |
+| CSDK-007 | tool | claude_sdk | low      | `claude_sdk/tool_definition.yaml`        | Ambiguous name (`process`, `handle`, `run`, …)                      |
+| OSH-001 | tool  | openshell  | critical | `openshell/shell.yaml`                   | `subprocess(..., shell=True)`                                       |
+| OSH-002 | tool  | openshell  | high     | `openshell/shell.yaml`                   | Shell call without `ALLOWED_COMMANDS` allowlist                     |
+| OSH-003 | tool  | openshell  | high     | `openshell/filesystem.yaml`              | `open(..., "w")` / `shutil.move`/`rmtree` etc.                      |
+| OSH-004 | repo  | openshell  | medium   | `openshell/resources.yaml`               | No resource limits configured anywhere                              |
+| OSH-005 | tool  | openshell  | high     | `openshell/network.yaml`                 | HTTP call with dynamic URL + no host allowlist                      |
+| OAI-001 | tool  | openai_sdk | low      | `openai_sdk/tool_definition.yaml`        | Tool function has no docstring                                      |
+| OAI-002 | tool  | openai_sdk | medium   | `openai_sdk/tool_definition.yaml`        | Tool has no type-annotated parameters                               |
+| OAI-003 | tool  | openai_sdk | medium   | `openai_sdk/decorator_config.yaml`       | `@function_tool(strict_mode=False)` — schema not enforced           |
+| OAI-004 | tool  | openai_sdk | medium   | `openai_sdk/decorator_config.yaml`       | No `failure_error_function` — errors propagate raw to the model     |
+| OAI-005 | tool  | openai_sdk | high     | `openai_sdk/network.yaml`                | HTTP call without `timeout=`                                        |
+| OAI-006 | tool  | openai_sdk | high     | `openai_sdk/path_safety.yaml`            | Path-like param passed to I/O without normalization                 |
+| OAI-101 | agent | openai_sdk | high     | `openai_sdk/agent_safety.yaml`           | Agent with shell tools and no `input_guardrails`                    |
+| OAI-102 | agent | openai_sdk | medium   | `openai_sdk/agent_safety.yaml`           | `tool_use_behavior="stop_on_first_tool"` — agent stops after one tool call |
+| OAI-103 | agent | openai_sdk | high     | `openai_sdk/agent_safety.yaml`           | `tool_choice=required` + `reset_tool_choice=False` — unbounded loop risk |
+| OAI-104 | agent | openai_sdk | high     | `openai_sdk/agent_safety.yaml`           | Bare `Agent` (not `SandboxAgent`) with shell-invoking tools         |
+| OAI-105 | agent | openai_sdk | high     | `openai_sdk/mcp_safety.yaml`             | Agent uses MCP servers without `input_guardrails`                   |
+| OAI-201 | repo  | openai_sdk | medium   | `openai_sdk/tracing.yaml`                | OpenAI Agents SDK present but no custom trace processor configured  |
 
 ### Stage 5 — Scoring ([internal/analysis/scoring.go](internal/analysis/scoring.go))
 
@@ -250,10 +294,12 @@ place so the curve can be tuned without touching detectors.
 
 ### Stage 6 — Generation ([internal/generation/](internal/generation/))
 
-Two generators, both deterministic by contract. Same findings → byte-identical
-output. The smoke test in [scanner_test.go](internal/scanner/scanner_test.go)
-runs the full pipeline twice on the sample agent and asserts artifact
-byte-equality; this guards the contract from regressions.
+Two generators, both deterministic by contract: same findings → byte-identical
+output. The contract is enforced by the generators themselves (sorted tool
+names, sorted findings by `RuleID`, deduped global-deny entries before
+marshaling). `TestScanDeterministic` (see §6 test layer 4) asserts this
+mechanically — a non-deterministic generator is a build failure, not a latent
+bug.
 
 - **Hooks** ([hooks.go](internal/generation/hooks.go)) — emits
   `hooks/pretooluse_validate.py` (per-tool validators behind a dispatch table)
@@ -297,41 +343,81 @@ that crosses ingestion → analysis → generation → review is a typed struct 
 JSON tags, because `ScanResult` is the contract for `--format json` CI output.
 
 ```go
-ScanResult {
-    ScanID             string             // sha256(repo + sorted python file list)[:16]
-    Repo               string
-    Manifest           ScanManifest       // what the normalizer found
-    Tools              []ToolDef          // discovery output
-    Findings           []Finding          // detector output
-    Readiness          []ToolReadiness    // per-tool scores
-    OverallScore       float64            // min across tools
-    GeneratedArtifacts []GeneratedArtifact
+// Phase 1 output
+RepoProfile {
+    Languages []Language   // detected by file extension
+    SDKDeps   []SDKDep     // declared deps (from manifests)
+    Manifest  ScanManifest // file inventory + discovered components
+}
+
+SDKDep { Name, Source string; Confidence float64 }
+SDK = "claude_agent_sdk" | "openai_agents" | "mcp" | "openshell"
+
+// Phase 2a output
+RepoInventory {
+    Tools              []ToolDef
+    Agents             []AgentDef
+    Guardrails         []GuardrailDef
+    Sessions           []SessionUse
+    HostedTools        []HostedToolDef
+    SDKsDetected       []SDK     // observed in code (drives Phase 2b policy selection)
+    Manifest           ScanManifest
+    UsesDefaultTracing bool
+}
+
+AgentDef {
+    SDK, Class, FilePath string; Line, EndLine int
+    Name         string         // from name= kwarg literal
+    Kwargs       *KwargTree     // all constructor kwargs, typed
+    ToolRefs     []ToolRef      // resolved to ToolDef or flagged External
+    HandoffRefs  []AgentRef
+    InputGuards  []GuardrailRef
+    OutputGuards []GuardrailRef
+    Opaque       bool           // Agent(**config) or tools=non-literal
+}
+
+// KwargTree holds a kwarg value as either a leaf or a nested map
+// (e.g. model_settings.tool_choice parses as Children["model_settings"].Children["tool_choice"])
+KwargTree { Value *Expr; Children map[string]*KwargTree }
+
+ToolDef {
+    Name           string
+    Kind           ToolKind   // claude_sdk_tool | openai_tool | mcp_tool | shell_invocation | unknown
+    Language       Language   // python | typescript | javascript | go
+    FilePath       string
+    Line, EndLine  int
+    Description    string
+    HasTypedParams bool
+    ParamNames     []string
+    Facts          map[string]string // detector-injected body facts
+    Config         map[string]string // decorator kwargs (e.g. strict_mode, failure_error_function)
 }
 
 ScanManifest {
     RepoRoot, IsRemote, RemoteURL string
     PythonFiles, TypeScriptFiles, JavaScriptFiles []string
     YAMLFiles, JSONFiles, MarkdownFiles []string
-    HasClaudeSDKDependency, HasOpenShellArtifact bool
-    Components []AgentComponent     // discovered non-tool agent artifacts
-}
-
-ToolDef {
-    Name           string
-    Kind           ToolKind          // claude_sdk_tool | mcp_tool | shell_invocation | unknown
-    Language       Language          // python | typescript | javascript | go
-    FilePath, Line, EndLine ...
-    Description    string
-    HasTypedParams bool
-    ParamNames     []string
-    Facts          map[string]string // detector-injected hints
+    HasClaudeSDKDependency, HasOpenShellArtifact bool // legacy convenience flags; prefer RepoProfile.SDKDeps
+    Components []AgentComponent
 }
 
 AgentComponent {
     Kind     ComponentKind  // mcp_config | claude_md | claude_settings | subagent | ...
     Path     string         // forward-slash relative to repo root
     Language Language       // set for code components, empty for configs/prompts
-    Note     string         // optional human-readable hint
+    Note     string
+}
+
+// Top-level output
+ScanResult {
+    ScanID             string
+    Repo               string
+    Manifest           ScanManifest
+    Tools              []ToolDef
+    Findings           []Finding
+    Readiness          []ToolReadiness
+    OverallScore       float64
+    GeneratedArtifacts []GeneratedArtifact
 }
 ```
 
@@ -343,8 +429,11 @@ Discipline rules:
 - `RawSource` was deliberately **not** included on `ToolDef`. Carrying full
   function bodies in memory and then in JSON is wasteful, and the LLM
   enrichment path that would consume them is not yet wired.
-- `Facts map[string]string` on `ToolDef` is reserved for detector-injected
-  hints (e.g., "this function shells out") that downstream stages can read
+- `ToolDef.Config` carries decorator kwargs (`strict_mode`, `failure_error_function`,
+  hosted-tool args) captured at discovery time. Detectors read these fields
+  instead of re-parsing the decorator from inside a rule.
+- `ToolDef.Facts map[string]string` is reserved for detector-injected body
+  facts (e.g., "this function shells out") that downstream stages can read
   without re-walking the AST.
 - `Finding.FixHints map[string]any` carries generator-specific keys (e.g.,
   `"hook": "pretooluse_validate"`, `"policy_emit": "command_allowlist"`,
@@ -360,22 +449,16 @@ Discipline rules:
 ## 4. Package layout
 
 ```
-cmd/karenctl/                    CLI entry point (cobra). main.go only.
+cmd/trustabl/                    CLI entry point (cobra). main.go only.
 internal/
 ├── models/                      Cross-boundary types. JSON-tagged. Zero deps.
-├── catalog/                     Embedded tool catalog: name → capability class.
-│   ├── catalog.go               CapabilityClass constants, Catalog, Lookup.
-│   ├── embed.go                 //go:embed tools_catalog.yaml.
-│   └── tools_catalog.yaml       Curated seed (~80 entries). Use
-│                                tools/gather_tools.py to grow it.
 ├── ingestion/                   Importer + Normalizer.
 ├── analysis/
 │   ├── astutil/                 Tiny tree-sitter ergonomic layer (NodeText,
 │   │                            Walk, FindAll, FunctionName, FunctionParams,
 │   │                            FunctionDocstring, FunctionHasTypedParams,
 │   │                            HasKwarg).
-│   ├── discovery.go             Tool discovery passes (Python; decorator
-│   │                            priority: @function_tool > @adk.tool > @tool > @server.tool).
+│   ├── discovery.go             Tool discovery passes.
 │   ├── heuristics.go            Domain helpers shared by every detector path:
 │   │                            FindFunctionNode, IsHTTPCall, IsPathishParam.
 │   ├── scoring.go               Per-tool + overall scoring.
@@ -391,18 +474,18 @@ internal/
 │   └── policies/                Embedded YAML rule definitions.
 │       ├── claude_sdk/
 │       │   ├── tool_definition.yaml   CSDK-001, CSDK-002, CSDK-007
-│       │   ├── network.yaml           CSDK-003 (fires on openai_tool too)
-│       │   ├── path_safety.yaml       CSDK-004 (fires on openai_tool too)
+│       │   ├── network.yaml           CSDK-003
+│       │   ├── path_safety.yaml       CSDK-004
 │       │   ├── error_handling.yaml    CSDK-005
 │       │   └── idempotency.yaml       CSDK-006
 │       ├── openai_sdk/
-│       │   ├── tool_definition.yaml   OAIS-001, OAIS-002, OAIS-007
-│       │   ├── error_handling.yaml    OAIS-005
-│       │   └── idempotency.yaml       OAIS-006
-│       ├── mcp/
-│       │   └── injection.yaml         MCP-001, MCP-002, MCP-003
-│       ├── catalog/
-│       │   └── capability_class.yaml  CATL-001 through CATL-009
+│       │   ├── tool_definition.yaml   OAI-001, OAI-002
+│       │   ├── decorator_config.yaml  OAI-003, OAI-004
+│       │   ├── network.yaml           OAI-005
+│       │   ├── path_safety.yaml       OAI-006
+│       │   ├── agent_safety.yaml      OAI-101, OAI-102, OAI-103, OAI-104
+│       │   ├── mcp_safety.yaml        OAI-105
+│       │   └── tracing.yaml           OAI-201
 │       └── openshell/
 │           ├── shell.yaml             OSH-001, OSH-002
 │           ├── filesystem.yaml        OSH-003
@@ -411,10 +494,6 @@ internal/
 ├── generation/                  Hooks + Policy generators (deterministic).
 ├── review/                      Human renderer, apply, export ZIP.
 └── inference/                   BYOK inference router (stub; cache only).
-
-tools/
-└── gather_tools.py              Standalone GitHub scraper. Produces
-                                 tools_raw.yaml for catalog curation.
 ```
 
 ### `internal/analysis/heuristics.go` — the shared-helper boundary
@@ -469,7 +548,7 @@ rules:
 
 ### Adding a rule
 
-1. Pick the right category subdirectory (`claude_sdk/` or `openshell/`).
+1. Pick the right category subdirectory (`claude_sdk/`, `openai_sdk/`, or `openshell/`).
 2. Either append to an existing topic file or create a new `<topic>.yaml`
    file — the loader walks recursively so new files are picked up
    automatically by `go:embed`.
@@ -478,6 +557,27 @@ rules:
 4. If your rule needs a primitive the schema does not yet expose, extend
    `MatchExpr` in `schema.go` and add a corresponding `Pred*` function in
    `predicates.go`. The evaluator wires them together by name.
+5. Add at least one fire case and one silent case for the new rule to
+   `policyRuleCases` in
+   [internal/rules/policies_test.go](internal/rules/policies_test.go). The
+   `TestPolicyRules_AllRulesCovered` guard fails at build time if a shipped
+   rule has no test coverage — this is contract, not best practice.
+
+### §5.1 META findings (engine-emitted, not YAML-driven)
+
+Phase 2b emits up to three engine-level findings before any rule runs. These
+are not backed by YAML policy files; they come from `SelectAndEmitMETA` in the
+scanner.
+
+| ID       | Trigger                                                    | Severity | Intent                                               |
+| -------- | ---------------------------------------------------------- | -------- | ---------------------------------------------------- |
+| META-001 | An SDK is observed in code (`SDKsDetected`) but trustabl has no policy pack for it | info | Honest "unaudited SDK" signal — silence on an unknown SDK is wrong |
+| META-002 | An SDK appears in declared deps (`SDKDeps`) but no code use was observed | info | Dep declared but not used — surfaces drift between manifests and code |
+| META-003 | An `AgentDef` has `Opaque=true` (`Agent(**config)` or `tools=non-literal`) | info | Agent analysis is partial; tool-graph predicates on this agent are unreliable |
+
+META findings use `RuleID = "META-001"` etc. and `Category = ""` (no category
+filter applies to them). They are included in `ScanResult.Findings` and
+emitted in both human and JSON output formats.
 
 ### Evaluator semantics ([evaluator.go](internal/rules/evaluator.go))
 
@@ -531,31 +631,71 @@ agnostic to where a rule comes from.
 
 ---
 
-## 6. Determinism contract
+## 6. Test strategy
 
-Two invariants are load-bearing for the user-facing experience and are tested:
+Coverage is split across three layers, each with a focused contract:
+
+1. **Predicate unit tests** ([predicates_test.go](internal/rules/predicates_test.go)).
+   Each `Pred*` function in
+   [internal/rules/predicates.go](internal/rules/predicates.go) is
+   exercised against tiny Python snippets — the AST building blocks are
+   verified in isolation.
+2. **Per-rule fire/silent tests** ([policies_test.go](internal/rules/policies_test.go)).
+   A table of `policyRuleCases` drives one fire and one silent case per
+   shipped rule, loading the actual YAML via `rules.Load(rules.DefaultFS())`.
+   `TestPolicyRules_AllRulesCovered` fails if any shipped rule lacks an
+   entry — adding a rule without test cases is therefore a build failure.
+3. **End-to-end sweep** ([scanner_test.go](internal/scanner/scanner_test.go)).
+   `TestScanExamples_NoCrash` walks every immediate subdirectory of
+   `examples/` (skipping the `ToolBench` dataset) and runs `scanner.Run`
+   on each. It asserts no error and a populated manifest — *not* specific
+   findings. The point is regression coverage: weird real-world code
+   shouldn't panic the discovery pass.
+4. **Determinism regression** ([determinism_test.go](internal/scanner/determinism_test.go)).
+   `TestScanDeterministic` runs `scanner.Run` twice over
+   `testdata/deterministic-fixture` and asserts that `ScanID` and all
+   `GeneratedArtifact.Contents` are byte-identical across both runs.
+   This enforces the §7 contract mechanically so a non-deterministic
+   generator is a build failure, not a latent bug.
+
+Real-world examples in `examples/` are NOT a controlled fixture and are
+not expected to trigger every rule. Per-rule correctness lives in
+`policies_test.go`.
+
+## 7. Determinism contract
+
+Two invariants are load-bearing for the user-facing experience:
 
 1. **Same inputs → same `ScanID`.** Derived from a sorted file list, so file
    ordering from the OS walk does not leak into the ID.
 2. **Same findings → byte-identical generated artifacts.** Generators sort
    tool names, sort findings by `RuleID`, and dedupe global deny entries by
-   `(RuleID, Reason)` before marshaling. `TestScanSampleAgent` runs the full
-   pipeline twice and asserts equality.
+   `(RuleID, Reason)` before marshaling. `Components` are sorted by
+   `(Kind, Path)` for the same reason.
 
 This matters because users commit the generated files. A non-deterministic
 generator means a user sees spurious diffs on every CI run, which trains them
 to ignore the diff entirely.
 
+The contract is enforced by `TestScanDeterministic` in
+[internal/scanner/determinism_test.go](internal/scanner/determinism_test.go):
+two consecutive `scanner.Run` calls over `testdata/deterministic-fixture` must
+produce identical `ScanID` values and byte-equal `GeneratedArtifact.Contents`
+for every artifact. A new generator that violates this is a build failure.
+
+New generators MUST sort their inputs and deduplicate before emitting. No
+timestamp, no map iteration order, no goroutine scheduling may influence output.
+
 ---
 
-## 7. CLI surface ([cmd/karenctl/main.go](cmd/karenctl/main.go))
+## 8. CLI surface ([cmd/trustabl/main.go](cmd/trustabl/main.go))
 
 ```
-karenctl scan <target> [--detectors=…] [--format=human|json]
+trustabl scan <target> [--detectors=…] [--format=human|json]
                        [--apply [--yes] [--overwrite]]
                        [--export=path.zip]
                        [--strict] [--no-color]
-karenctl version
+trustabl version
 ```
 
 Exit codes:
@@ -570,7 +710,7 @@ the boundary is intentionally narrow.
 
 ---
 
-## 8. Build constraint: CGO
+## 9. Build constraint: CGO
 
 tree-sitter is a C library, so `CGO_ENABLED=1` is required. `README.md`
 documents zig-cc as the easiest cross-compile path. If single-binary,
@@ -581,16 +721,18 @@ take it absent a concrete distribution requirement.
 
 ---
 
-## 9. What is intentionally out
+## 10. What is intentionally out
 
 - **No LLM enrichment yet.** `internal/inference/router.go` defines the BYOK
   interface and an in-process cache; `Call()` returns `ErrLLMDisabled` when
   no API key is set. The planned first target is upgrading low-confidence
   rule-based hits to confirmed findings (CSDK-005 raw-exception detection is
   the highest-leverage rule for this).
-- **No corpus-eval benchmark.** The architecture doc § 8 calls for 20–40
-  real agent repos before MVP is "done". This skeleton ships rule-based
-  detectors and a single-fixture smoke test; that is not the corpus eval.
+- **No corpus-eval benchmark.** Detection quality measured on a 20–40
+  real-agent-repo corpus is the MVP gate. This skeleton ships rule-based
+  detectors with three-layer test coverage (see §6) — that is not the
+  corpus eval, which requires labelled-finding ground truth on real
+  repos.
 - **No web app, no API server, no GitHub Action.** CLI-only.
 - **Per-finding interactive accept/edit/reject.** `--apply --yes` is the CLI
   equivalent of accept-all; richer UX waits for a host that can render it.
