@@ -43,6 +43,7 @@ rules:
       Wrap execution inside a sandbox (e.g. nsjail, seccomp, RestrictedPython,
       or a container). Assert that the code string is safe before execution;
       never exec model-supplied strings without restriction.
+    fix_type: config
     fix_hints:
       policy_action: deny_code_exec
 
@@ -78,6 +79,7 @@ rules:
       Define a constant ALLOWED_COMMANDS and assert argv[0] is in it before
       invoking subprocess. The generated OpenShell policy will include a
       matching command allowlist.
+    fix_type: config
     fix_hints:
       policy_emit: command_allowlist
 
@@ -113,6 +115,7 @@ rules:
     fix: >
       Resolve the path with `Path(...).resolve()` and assert it falls under
       an allowed working directory before writing.
+    fix_type: config
     fix_hints:
       hook: pretooluse_validate
       guard: path_under_root
@@ -147,6 +150,7 @@ rules:
     fix: >
       Pass an explicit `allowed_tools` list when creating the subagent. Grant
       only the minimal tool set required for the delegated task.
+    fix_type: config
     fix_hints:
       hook: pretooluse_validate
       guard: subagent_tool_scope
@@ -183,6 +187,7 @@ rules:
       Load credentials exclusively from environment variables or a secrets
       manager (e.g. HashiCorp Vault, AWS Secrets Manager). Never hardcode
       credentials or return them to the model.
+    fix_type: config
     fix_hints:
       hook: posttooluse_log
       guard: redact_credentials
@@ -218,6 +223,7 @@ rules:
       Add a confirmation checkpoint before any irreversible UI action. At
       minimum, log the intended action and require explicit approval before
       executing it.
+    fix_type: config
     fix_hints:
       hook: pretooluse_validate
       guard: require_human_approval
@@ -252,6 +258,7 @@ rules:
     fix: >
       Wrap mutations in a database transaction. Expose a `dry_run: bool`
       parameter so callers can preview the effect without committing.
+    fix_type: config
     fix_hints:
       hook: pretooluse_validate
       guard: dry_run_check
@@ -286,6 +293,7 @@ rules:
     fix: >
       Add exponential backoff with jitter on retries. Enforce a per-run
       call budget and surface a structured error when the limit is reached.
+    fix_type: config
     fix_hints:
       hook: pretooluse_validate
       guard: rate_limit_check
@@ -320,6 +328,7 @@ rules:
     fix: >
       Enforce a maximum entry size and a per-user or per-session scope
       boundary. Reject writes that exceed limits with a structured error.
+    fix_type: config
     fix_hints:
       hook: pretooluse_validate
       guard: memory_scope_limit

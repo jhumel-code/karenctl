@@ -29,3 +29,4 @@ rules:
       in the environment) OR register a custom trace processor via
       agents.tracing.add_trace_processor(...) that redacts sensitive fields
       before they leave the process.
+    fix_type: config

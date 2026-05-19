@@ -33,5 +33,6 @@ rules:
     fix: >
       Define an allowlist of hostnames the tool may reach. The generated
       OpenShell policy will gate egress to those hosts.
+    fix_type: config
     fix_hints:
       policy_emit: network_allowlist

@@ -16,7 +16,6 @@ rules:
     language: python
     applies_to:
       - claude_sdk_tool
-      - mcp_tool
     match:
       has_docstring: false
     explanation: >
@@ -27,6 +26,7 @@ rules:
     fix: >
       Add a one-paragraph docstring describing inputs, outputs, and when to
       use this tool.
+    fix_type: code
     fix_hints:
       add_docstring: true
 
@@ -38,7 +38,6 @@ rules:
     language: python
     applies_to:
       - claude_sdk_tool
-      - mcp_tool
     match:
       all:
         - has_params: true
@@ -51,6 +50,7 @@ rules:
     fix: >
       Annotate every parameter with a type. Prefer pydantic models for nested
       args.
+    fix_type: code
     fix_hints:
       add_input_schema: true
 
@@ -62,7 +62,6 @@ rules:
     language: python
     applies_to:
       - claude_sdk_tool
-      - mcp_tool
     match:
       name_in:
         - process
@@ -81,3 +80,4 @@ rules:
       refuse to call it at all.
     fix: >
       Rename to a verb-object form, e.g. `summarize_invoice`, `refund_charge`.
+    fix_type: code

@@ -131,6 +131,7 @@ finding for that tool.
 | MCP-001  | MCP tool accepts injection-prone parameter names   | High     | 0.75 |  52.5 |
 | MCP-002  | MCP tool contains eval or exec call                | Critical | 0.90 |  90.0 |
 | MCP-003  | MCP tool deserializes data with pickle or marshal  | Critical | 0.95 |  95.0 |
+| MCP-004  | MCP tool has no description                        | Low      | 0.95 |  14.3 |
 
 ### Catalog capability-class (CATL)
 
@@ -165,7 +166,7 @@ finding for that tool.
            OAI-003 (38.0), OAI-004 (28.0), OAI-104 (30.0)
            OAI-201 (32.0), OAIS-001 (14.3), OAIS-002 (36.0)
            OAIS-005 (24.0), OAIS-006 (22.0), OAIS-007 (13.5)
-           CATL-007 (26.0), CATL-008 (24.0)
+           MCP-004 (14.3), CATL-007 (26.0), CATL-008 (24.0)
 ```
 <!-- score-table:end -->
 

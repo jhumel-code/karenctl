@@ -28,5 +28,6 @@ rules:
     fix: >
       Catch known failure modes and return a structured payload such as
       `{"error": "...", "retryable": False}` instead of raising.
+    fix_type: code
     fix_hints:
       wrap_errors: true

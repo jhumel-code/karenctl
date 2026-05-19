@@ -99,6 +99,7 @@ func findingFromRule(r RuleDef, filePath string, line int, toolName string) mode
 		RuleID:       r.ID,
 		Category:     r.Category,
 		Severity:     r.Severity,
+		FixType:      r.FixType,
 		ToolName:     toolName,
 		FilePath:     filePath,
 		Line:         line,

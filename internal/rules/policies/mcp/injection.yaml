@@ -38,6 +38,7 @@ rules:
       Replace open-ended command parameters with structured, typed inputs.
       If a command string is genuinely required, validate it against an
       allowlist before use.
+    fix_type: code
     fix_hints:
       hook: pretooluse_validate
       guard: param_name_sanitize
@@ -64,6 +65,7 @@ rules:
     fix: >
       Remove eval/exec entirely. If dynamic dispatch is needed, use an
       explicit allowlist and dispatch table rather than executing strings.
+    fix_type: code
     fix_hints:
       policy_action: deny_code_exec
 
@@ -89,5 +91,27 @@ rules:
     fix: >
       Replace pickle/marshal with a safe format such as JSON or msgpack.
       Never deserialize untrusted bytes with pickle.
+    fix_type: code
     fix_hints:
       policy_action: deny_unsafe_deserialize
+
+  - id: MCP-004
+    title: MCP tool has no description
+    scope: tool
+    severity: low
+    confidence: 0.95
+    language: python
+    applies_to:
+      - mcp_tool
+    match:
+      has_docstring: false
+    explanation: >
+      MCP tools expose a description field to the orchestrating model so it
+      knows when to call the tool. Without a docstring, the server omits the
+      description, and the model must guess from the function name alone —
+      which causes mis-selection or skipped calls under ambiguous prompts.
+    fix: >
+      Add a one-paragraph docstring describing what the tool does, its inputs,
+      and its outputs. The MCP framework surfaces this as the tool description
+      to any connected client.
+    fix_type: code

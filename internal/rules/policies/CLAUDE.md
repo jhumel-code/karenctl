@@ -37,9 +37,16 @@ Do not skip step 1.
 ## Required fields per rule
 
 Every rule MUST set: `id`, `title`, `severity`, `confidence`,
-`applies_to`, `match`, `explanation`, `fix`. The loader refuses to start
+`applies_to`, `match`, `explanation`, `fix`, `fix_type`. The loader refuses to start
 the scanner if any are missing — this surfaces as a `scan: ...` error in
 the CLI.
+
+`fix_type:` is REQUIRED. Allowed values: `config` | `code`.
+- `config` — fix by adding guardrails, hooks, sandbox policies, or agent constructor
+  parameters. No tool source code needs to change. These findings appear first in
+  scan output under "Config & permission findings".
+- `code` — fix requires modifying tool or agent source code. Findings appear in a
+  separate "Code findings" section.
 
 `language:` is OPTIONAL but state it explicitly — defaults to `python`
 when omitted. For TypeScript / JavaScript / Go rules, set it explicitly:

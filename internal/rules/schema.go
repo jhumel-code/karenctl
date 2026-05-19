@@ -30,6 +30,7 @@ type RuleDef struct {
 	Match       MatchExpr               `yaml:"match"`
 	Explanation string                  `yaml:"explanation"`
 	Fix         string                  `yaml:"fix"`
+	FixType     models.FixType          `yaml:"fix_type"`
 	FixHints    map[string]any          `yaml:"fix_hints,omitempty"`
 	Category    models.DetectorCategory `yaml:"-"` // populated by loader
 }

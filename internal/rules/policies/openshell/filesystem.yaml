@@ -26,5 +26,6 @@ rules:
     fix: >
       Constrain writes to a single working directory and let the generated
       OpenShell policy enforce the prefix at the sandbox layer.
+    fix_type: config
     fix_hints:
       policy_emit: fs_write_prefix

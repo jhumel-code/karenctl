@@ -100,26 +100,60 @@ func (r *Renderer) Render(result models.ScanResult) string {
 	}
 	b.WriteString("\n")
 
-	// Findings list, grouped by tool.
-	b.WriteString(styleHeader.Render("Findings") + "\n")
-	byTool := map[string][]models.Finding{}
-	for _, f := range result.Findings {
-		byTool[f.ToolName] = append(byTool[f.ToolName], f)
-	}
-	for _, ready := range result.Readiness {
-		fs := byTool[ready.ToolName]
-		if len(fs) == 0 {
-			continue
+	// Findings list split by fix_type: config fixes first (safe, no code change),
+	// then code fixes (require source modification).
+	renderFindingGroup := func(label string, fixType models.FixType) {
+		byTool := map[string][]models.Finding{}
+		for _, f := range result.Findings {
+			if f.FixType == fixType {
+				byTool[f.ToolName] = append(byTool[f.ToolName], f)
+			}
 		}
-		fmt.Fprintf(&b, "\n  %s\n", styleHeader.Render(ready.ToolName))
-		for _, f := range fs {
-			fmt.Fprintf(&b, "    [%s] %s %s  (%s:%d)\n",
-				f.RuleID, sevTag(f.Severity), f.Title,
-				f.FilePath, f.Line)
-			fmt.Fprintf(&b, "        %s\n", styleDim.Render(wrapAt(f.Explanation, 86)))
-			fmt.Fprintf(&b, "        %s %s\n", styleDim.Render("fix:"), f.SuggestedFix)
+		hasAny := false
+		for _, ready := range result.Readiness {
+			if len(byTool[ready.ToolName]) > 0 {
+				hasAny = true
+				break
+			}
+		}
+		// Also check tool-less findings (agent/repo scope have empty ToolName).
+		for _, f := range result.Findings {
+			if f.FixType == fixType && f.ToolName == "" {
+				hasAny = true
+				break
+			}
+		}
+		if !hasAny {
+			return
+		}
+		b.WriteString("\n" + styleHeader.Render(label) + "\n")
+		for _, ready := range result.Readiness {
+			fs := byTool[ready.ToolName]
+			if len(fs) == 0 {
+				continue
+			}
+			fmt.Fprintf(&b, "\n  %s\n", styleHeader.Render(ready.ToolName))
+			for _, f := range fs {
+				fmt.Fprintf(&b, "    [%s] %s %s  (%s:%d)\n",
+					f.RuleID, sevTag(f.Severity), f.Title,
+					f.FilePath, f.Line)
+				fmt.Fprintf(&b, "        %s\n", styleDim.Render(wrapAt(f.Explanation, 86)))
+				fmt.Fprintf(&b, "        %s %s\n", styleDim.Render("fix:"), f.SuggestedFix)
+			}
+		}
+		// Agent/repo-scoped findings have no ToolName.
+		for _, f := range result.Findings {
+			if f.FixType == fixType && f.ToolName == "" {
+				fmt.Fprintf(&b, "\n  [%s] %s %s  (%s:%d)\n",
+					f.RuleID, sevTag(f.Severity), f.Title,
+					f.FilePath, f.Line)
+				fmt.Fprintf(&b, "      %s\n", styleDim.Render(wrapAt(f.Explanation, 86)))
+				fmt.Fprintf(&b, "      %s %s\n", styleDim.Render("fix:"), f.SuggestedFix)
+			}
 		}
 	}
+	renderFindingGroup("Config & permission findings  (no code change required)", models.FixTypeConfig)
+	renderFindingGroup("Code findings  (source change required)", models.FixTypeCode)
 
 	// Generated artifacts (so the user knows what would be written).
 	if len(result.GeneratedArtifacts) > 0 {

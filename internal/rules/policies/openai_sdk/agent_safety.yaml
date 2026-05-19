@@ -32,6 +32,7 @@ rules:
       safe to dispatch to shell tools, and wire it via input_guardrails=[...]
       on the Agent(...) constructor. The guardrail should return
       GuardrailFunctionOutput(tripwire_triggered=True, ...) on rejected input.
+    fix_type: config
 
   - id: OAI-102
     title: Agent uses tool_use_behavior="stop_on_first_tool"
@@ -57,6 +58,7 @@ rules:
       Remove the tool_use_behavior="stop_on_first_tool" kwarg (the default
       "run_llm_again" is safe) or constrain it via StopAtTools(...) listing
       only tools whose outputs you control.
+    fix_type: config
 
   - id: OAI-103
     title: tool_choice="required" combined with reset_tool_choice=False
@@ -85,6 +87,7 @@ rules:
       or change tool_choice to "auto". If forced tool use is intentional,
       ensure at least one of the tools terminates the agent via
       tool_use_behavior=StopAtTools(...).
+    fix_type: config
 
   - id: OAI-104
     title: Raw Agent (not SandboxAgent) wires shell or filesystem-touching tools
@@ -108,3 +111,4 @@ rules:
       restricting the file paths and commands the agent can reach. If the
       privileged tools are needed but sandboxing is impractical, document
       the decision and acknowledge the elevated risk explicitly.
+    fix_type: config

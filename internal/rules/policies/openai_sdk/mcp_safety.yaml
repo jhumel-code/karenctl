@@ -31,3 +31,4 @@ rules:
       Add at least one @input_guardrail that inspects the user's input AND
       the resolved tool list before the model is invoked. Pin MCP servers
       to known-trusted URLs/checksums and document the trust assumption.
+    fix_type: config

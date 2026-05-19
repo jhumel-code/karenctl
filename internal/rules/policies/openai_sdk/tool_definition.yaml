@@ -26,6 +26,7 @@ rules:
     fix: >
       Add a one-paragraph docstring describing inputs, outputs, and when to
       use this tool.
+    fix_type: code
     fix_hints:
       add_docstring: true
 
@@ -49,6 +50,7 @@ rules:
     fix: >
       Annotate every parameter with a type. Use Pydantic models for nested
       or complex arguments.
+    fix_type: code
     fix_hints:
       add_input_schema: true
 
@@ -78,3 +80,4 @@ rules:
       refuse to call it at all when a better-named alternative is present.
     fix: >
       Rename to a verb-object form, e.g. `summarize_invoice`, `fetch_weather`.
+    fix_type: code

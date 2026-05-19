@@ -7,6 +7,24 @@ package models
 
 import "math"
 
+// FixType classifies how a finding can be remediated: by changing agent/tool
+// configuration (permissions, guardrails, sandbox policies) or by modifying
+// tool source code directly.
+type FixType string
+
+const (
+	// FixTypeConfig — fix by adding guardrails, hooks, sandbox policies, or
+	// agent constructor parameters. No tool source code needs to change.
+	FixTypeConfig FixType = "config"
+	// FixTypeCode — fix requires modifying tool or agent source code.
+	FixTypeCode FixType = "code"
+)
+
+// ValidFixType reports whether f is a known fix_type value.
+func ValidFixType(f FixType) bool {
+	return f == FixTypeConfig || f == FixTypeCode
+}
+
 // Scope classifies a rule by the kind of entity it fires against.
 type Scope string
 
@@ -157,6 +175,7 @@ type Finding struct {
 	RuleID       string             `json:"rule_id"`
 	Category     DetectorCategory   `json:"category"`
 	Severity     Severity           `json:"severity"`
+	FixType      FixType            `json:"fix_type"`
 	ToolName     string             `json:"tool_name"`
 	FilePath     string             `json:"file_path"`
 	Line         int                `json:"line"`

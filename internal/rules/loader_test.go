@@ -28,6 +28,7 @@ rules:
       has_docstring: true
     explanation: Some explanation.
     fix: Some fix.
+    fix_type: code
 `
 
 func makeFS(files map[string]string) fs.FS {

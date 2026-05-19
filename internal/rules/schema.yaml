@@ -98,6 +98,14 @@ rules:
       Pass `timeout=` (typically 5–30s) to the request. Surface failures
       as a structured error the model can react to.
 
+    fix_type: config                        # REQUIRED. Allowed: config | code.
+                                            #   config — fix by adding guardrails, hooks, sandbox
+                                            #            policies, or agent constructor parameters.
+                                            #            No tool source code needs to change.
+                                            #   code   — fix requires modifying tool or agent source.
+                                            # The renderer groups findings by fix_type so users see
+                                            # safe config fixes before invasive code changes.
+
     fix_hints:                              # OPTIONAL. Free-form keys consumed by the generators.
                                             # Unknown keys are ignored. Common keys:
       hook: pretooluse_validate             #   hook: <name>          — opts the finding into hook generation

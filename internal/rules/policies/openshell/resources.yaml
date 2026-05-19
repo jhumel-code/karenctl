@@ -23,5 +23,6 @@ rules:
     fix: >
       The generated openshell/policy.yaml will include default limits —
       review them against your expected workloads before committing.
+    fix_type: config
     fix_hints:
       policy_emit: default_resource_limits

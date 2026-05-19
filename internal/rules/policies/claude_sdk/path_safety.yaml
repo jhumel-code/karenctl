@@ -38,6 +38,7 @@ rules:
     fix: >
       Resolve the path with `Path(...).resolve()` and assert it sits under an
       allowed root.
+    fix_type: code
     fix_hints:
       hook: pretooluse_validate
       guard: path_under_root

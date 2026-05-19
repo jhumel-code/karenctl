@@ -130,7 +130,9 @@ func kindFromDecorators(decs []*sitter.Node, src []byte) models.ToolKind {
 			return models.KindGoogleADKTool
 		// Claude Agent SDK conventions. Real names are still in flux —
 		// CSDK is pre-1.0. Expand this list as the SDK stabilizes.
-		case strings.Contains(lower, "@tool"),
+		// Use isExactDecorator for @tool — substring match would also catch
+		// @tool_input_guardrail, @tool_output_guardrail, etc.
+		case isExactDecorator(lower, "@tool"),
 			strings.Contains(lower, "@claude_tool"),
 			strings.Contains(lower, "@agent.tool"),
 			strings.Contains(lower, "claude_agent_sdk"):
@@ -142,6 +144,17 @@ func kindFromDecorators(decs []*sitter.Node, src []byte) models.ToolKind {
 		}
 	}
 	return models.KindUnknown
+}
+
+// isExactDecorator reports whether lower equals the given decorator prefix
+// exactly, or is the prefix followed by '(' (i.e. @tool vs @tool(...)).
+// This prevents "@tool" from matching "@tool_input_guardrail" etc.
+func isExactDecorator(lower, prefix string) bool {
+	if !strings.HasPrefix(lower, prefix) {
+		return false
+	}
+	rest := lower[len(prefix):]
+	return rest == "" || rest[0] == '('
 }
 
 // callsShell returns true if any descendant of fn is a call to

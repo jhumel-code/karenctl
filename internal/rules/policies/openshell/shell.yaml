@@ -31,6 +31,7 @@ rules:
     fix: >
       Pass the command as a list and remove `shell=True`. Encode any user
       data as a positional argument, never via string interpolation.
+    fix_type: code
     fix_hints:
       policy_action: deny_shell_true
 
@@ -60,5 +61,6 @@ rules:
     fix: >
       Define a constant ALLOWED_COMMANDS and assert argv[0] is in it. The
       generated OpenShell policy will also include a command allowlist.
+    fix_type: config
     fix_hints:
       policy_emit: command_allowlist

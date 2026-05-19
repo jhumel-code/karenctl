@@ -29,6 +29,7 @@ rules:
       Remove the strict_mode=False kwarg (the default True is the safe
       setting). If the relaxation was needed for a specific input shape,
       adjust the type hints to accept that shape explicitly.
+    fix_type: code
 
   - id: OAI-004
     title: Tool has no failure_error_function
@@ -54,3 +55,4 @@ rules:
       Pass failure_error_function= to the decorator. The function should
       receive the exception and the run context, and return a structured
       string the model can reason about.
+    fix_type: code

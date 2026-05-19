@@ -108,6 +108,11 @@ func Load(fsys fs.FS) ([]PolicyFile, error) {
 			if rule.Fix == "" {
 				errs = append(errs, fmt.Errorf("%s: fix is required", tag))
 			}
+			if rule.FixType == "" {
+				errs = append(errs, fmt.Errorf("%s: fix_type is required (config|code)", tag))
+			} else if !models.ValidFixType(rule.FixType) {
+				errs = append(errs, fmt.Errorf("%s: unknown fix_type %q (allowed: config, code)", tag, rule.FixType))
+			}
 			if rule.ID != "" {
 				if prev, seen := seenIDs[rule.ID]; seen {
 					errs = append(errs, fmt.Errorf("duplicate rule ID %q in %s (previously defined in %s)", rule.ID, name, prev))

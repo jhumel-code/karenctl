@@ -549,6 +549,17 @@ def load_data(blob: str) -> object:
     import json
     return json.loads(blob)
 `, nil, false},
+
+	// ─── MCP-004 missing docstring ───────────────────────────────────────────
+	{"MCP-004 fires on missing docstring", "MCP-004", models.KindMCPTool, `
+def get_weather(city: str) -> str:
+    return city
+`, nil, true},
+	{"MCP-004 silent with docstring", "MCP-004", models.KindMCPTool, `
+def get_weather(city: str) -> str:
+    """Return current weather for the given city."""
+    return city
+`, nil, false},
 }
 
 // policyRepoRuleCases covers repo-scoped rules.

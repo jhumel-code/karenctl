@@ -41,6 +41,7 @@ rules:
       must also honor the key for this protection to be effective.
     fix: >
       Add an `idempotency_key: str` parameter and pass it to the backing API.
+    fix_type: code
     fix_hints:
       hook: pretooluse_validate
       inject_idempotency: true

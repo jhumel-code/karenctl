@@ -20,7 +20,8 @@ Copy this verbatim. Fill every section. Delete no sections.
 **Policy ID:** `<policy.id from YAML>`  
 **File:** `internal/rules/policies/<category>/<topic>.yaml`  
 **Rules:** <comma-separated rule IDs, e.g. CSDK-001, CSDK-002>  
-**Severities:** <comma-separated severities matching rule order>
+**Severities:** <comma-separated severities matching rule order>  
+**Fix types:** <comma-separated fix_type values matching rule order — `config` or `code`>
 
 ---
 
@@ -51,7 +52,7 @@ idempotency key the same charge fires twice" is sufficient.
 
 One H3 block per rule in this policy file.
 
-### <RULE-ID> — <rule title> (Severity: <X>, Confidence: <Y>)
+### <RULE-ID> — <rule title> (Severity: <X>, Confidence: <Y>, Fix type: <config|code>)
 
 **What we detect:**  
 State the exact predicate(s) in plain language. Name the specific functions,
@@ -72,6 +73,13 @@ statements ("this could cause problems"). Name the specific damage.
 Defend the severity level. If it is Critical, explain why no partial
 mitigation exists. If it is Medium instead of High, explain the precondition
 that lowers the impact. Reviewers will challenge severity — answer preemptively.
+
+**Fix type — <config|code>:**  
+State whether the fix requires changing tool/agent source code (`code`) or
+can be applied purely through guardrails, hooks, sandbox policies, or agent
+constructor parameters without touching tool code (`config`). One sentence
+justifying the classification. Config fixes are prioritized in scan output
+because they carry lower breakage risk.
 
 **Confidence <Z>:**  
 Explain what the confidence gap represents. Name the specific false positive
@@ -114,6 +122,11 @@ audit", "use is_relative_to() not string prefix matching").
 - File path is relative to the repo root.
 - Rules list in ascending ID order.
 - Severities in the same order as the Rules list.
+- Fix types in the same order as the Rules list. Allowed values: `config`, `code`.
+  - `config` — fix by adding guardrails, hooks, sandbox policies, or agent constructor
+    parameters. No tool source code needs to change. These findings appear first in
+    scan output.
+  - `code` — fix requires modifying tool or agent source code.
 
 ### "What this policy covers" — do not skip
 
