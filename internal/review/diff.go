@@ -45,7 +45,13 @@ func (r *Renderer) Render(result models.ScanResult) string {
 
 	fmt.Fprintf(&b, "%s\n", styleHeader.Render("Scan summary"))
 	fmt.Fprintf(&b, "  Repo:           %s\n", result.Repo)
-	fmt.Fprintf(&b, "  Tools found:    %d\n", len(result.Tools))
+	fmt.Fprintf(&b, "  Languages:      %s\n", csv(result.Languages))
+	fmt.Fprintf(&b, "  SDKs:           %s\n", csv(result.SDKs))
+	fmt.Fprintf(&b, "  Tools found:    %d %s\n", repoToolCount(result),
+		styleDim.Render("(distinct, repo-wide: custom defs + built-in tools granted to agents)"))
+	fmt.Fprintf(&b, "  Tool defs:      %d %s\n", len(result.Tools),
+		styleDim.Render("(custom @tool functions analysed by tool-scope rules)"))
+	fmt.Fprintf(&b, "  Agents found:   %d\n", len(result.Agents))
 	fmt.Fprintf(&b, "  Findings:       %d\n", len(result.Findings))
 	sevTag := func(s models.Severity) string {
 		switch s {
@@ -86,6 +92,25 @@ func (r *Renderer) Render(result models.ScanResult) string {
 
 	fmt.Fprintf(&b, "  Overall score:  %s\n", scoreCell(result.OverallScore))
 	fmt.Fprintf(&b, "  Risk score:     %s\n\n", riskCell(result.RiskScore))
+
+	if len(result.Agents) > 0 {
+		b.WriteString(styleHeader.Render("Agents") + "\n")
+		for _, a := range result.Agents {
+			label := a.Class
+			if a.Name != "" {
+				label += " " + a.Name
+			}
+			loc := fmt.Sprintf("%s:%d", a.FilePath, a.Line)
+			if a.Opaque {
+				loc += " " + styleDim.Render("(opaque — rules cannot evaluate)")
+			}
+			fmt.Fprintf(&b, "  %-32s %s  %s\n", label, styleDim.Render(string(a.SDK)), loc)
+			if tools := toolRefNames(a.ToolRefs); tools != "" {
+				fmt.Fprintf(&b, "      %s %s\n", styleDim.Render("tools:"), tools)
+			}
+		}
+		b.WriteString("\n")
+	}
 
 	if len(result.Findings) == 0 {
 		b.WriteString(styleOK.Render("No findings. Nothing to commit.") + "\n")
@@ -164,6 +189,52 @@ func (r *Renderer) Render(result models.ScanResult) string {
 		}
 	}
 	return b.String()
+}
+
+// csv joins a list of string-like values for the summary header, or "(none)"
+// when empty so the line never renders blank.
+func csv[T ~string](items []T) string {
+	if len(items) == 0 {
+		return "(none)"
+	}
+	parts := make([]string, len(items))
+	for i, it := range items {
+		parts[i] = string(it)
+	}
+	return strings.Join(parts, ", ")
+}
+
+// repoToolCount is the distinct repo-wide tool surface: every custom tool
+// definition plus every tool name granted to any agent (quote-stripped,
+// deduped). This is the honest "how many tools does this repo expose"
+// number — len(result.Tools) alone reads as 0 for repos that only wire
+// built-in tools into agents.
+func repoToolCount(result models.ScanResult) int {
+	seen := make(map[string]struct{})
+	for _, t := range result.Tools {
+		seen[t.Name] = struct{}{}
+	}
+	for _, a := range result.Agents {
+		for _, r := range a.ToolRefs {
+			seen[strings.Trim(r.Name, `"'`)] = struct{}{}
+		}
+	}
+	return len(seen)
+}
+
+// toolRefNames renders an agent's granted tools (quote-stripped) for the
+// Agents section. These are the tools the agent can invoke — built-in tool
+// names for Claude AgentDefinition, resolved/external refs for others — and
+// are distinct from discovered tool *definitions* counted in "Tool defs".
+func toolRefNames(refs []models.ToolRef) string {
+	if len(refs) == 0 {
+		return ""
+	}
+	parts := make([]string, len(refs))
+	for i, r := range refs {
+		parts[i] = strings.Trim(r.Name, `"'`)
+	}
+	return strings.Join(parts, ", ")
 }
 
 // wrapAt is a deliberately dumb word-wrapper. The output is for humans on a

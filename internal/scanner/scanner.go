@@ -22,9 +22,9 @@ import (
 
 // Config configures one scan. Zero-value is "scan everything, generate everything".
 type Config struct {
-	Target      string                    // local path or GitHub URL
-	Categories  []models.DetectorCategory // empty means all categories
-	Version     string                    // injected by the CLI for artifact metadata
+	Target     string                    // local path or GitHub URL
+	Categories []models.DetectorCategory // empty means all categories
+	Version    string                    // injected by the CLI for artifact metadata
 }
 
 // Run executes the full pipeline. The returned ScanResult is what gets
@@ -76,6 +76,8 @@ func Run(cfg Config) (models.ScanResult, error) {
 		registry = registry.Subset(cfg.Categories...)
 	}
 	metaFindings := SelectAndEmitMETA(profile, inventory)
+	metaFindings = append(metaFindings,
+		EmitCoverageMETA(registry.ApplicableCategories(profile, inventory), inventory)...)
 
 	// Phase 2c: analysis
 	ruleFindings := registry.Run(profile, inventory, parsed)
@@ -90,8 +92,11 @@ func Run(cfg Config) (models.ScanResult, error) {
 	return models.ScanResult{
 		ScanID:             scanID(repoLabel, profile.Manifest),
 		Repo:               repoLabel,
+		Languages:          profile.Languages,
+		SDKs:               inventory.SDKsDetected,
 		Manifest:           profile.Manifest,
 		Tools:              tools,
+		Agents:             inventory.Agents,
 		Findings:           findings,
 		Readiness:          readiness,
 		OverallScore:       overall,
