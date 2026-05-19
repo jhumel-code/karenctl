@@ -168,12 +168,12 @@ func validAppliesToForScope(scope models.Scope, kind string) bool {
 		}
 	case models.ScopeAgent:
 		switch kind {
-		case "openai_agent", "openai_sandbox_agent", "claude_agent_definition":
+		case "openai_agent", "openai_sandbox_agent", "claude_agent_definition", "google_adk_agent":
 			return true
 		}
 	case models.ScopeRepo:
 		switch kind {
-		case "claude_sdk", "openai_agents", "openshell", "mcp":
+		case "claude_sdk", "openai_agents", "google_adk", "openshell", "mcp":
 			return true
 		}
 	}

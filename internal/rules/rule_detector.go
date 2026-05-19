@@ -81,6 +81,8 @@ func agentKindMatches(kind string, a models.AgentDef) bool {
 		return a.SDK == models.SDKOpenAIAgents && a.Class == "SandboxAgent"
 	case "claude_agent_definition":
 		return a.SDK == models.SDKClaudeAgentSDK && a.Class == "AgentDefinition"
+	case "google_adk_agent":
+		return a.SDK == models.SDKGoogleADK && a.Class == "Agent"
 	}
 	return false
 }

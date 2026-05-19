@@ -1,0 +1,64 @@
+policy:
+  id: google_adk_agent_safety
+  name: Google ADK agent safety
+  category: google_adk
+  description: >
+    Agent-scoped rules for Google ADK Agent(...) declarations. These fire per
+    Agent constructor call and inspect the safety kwargs the agent was built
+    with. Omitting these kwargs leaves the agent with no pre-execution
+    validation and permissive content filtering.
+
+rules:
+  - id: GADK-101
+    title: Agent has no before_tool_callback
+    scope: agent
+    severity: high
+    confidence: 0.8
+    language: python
+    applies_to:
+      - google_adk_agent
+    match:
+      agent_kwarg_missing:
+        - before_tool_callback
+    explanation: >
+      Without a before_tool_callback, the agent performs no pre-execution
+      validation on tool calls. A prompt-injected or mis-scoped task can
+      invoke any tool with any parameters, including destructive or
+      exfiltrating ones, with no interception point. The callback is the
+      primary gate for parameter allowlisting, rate-limiting, and
+      audit-logging tool invocations before they reach the tool body.
+    fix: >
+      Pass before_tool_callback= to the Agent constructor. The callback
+      receives the tool name and parameters before execution; return a dict
+      with an "error" key to block the call, or None to allow it.
+    fix_type: config
+    fix_hints:
+      hook: before_tool_callback
+      guard: param_allowlist
+
+  - id: GADK-102
+    title: Agent has no safety_settings
+    scope: agent
+    severity: medium
+    confidence: 0.75
+    language: python
+    applies_to:
+      - google_adk_agent
+    match:
+      agent_kwarg_missing:
+        - safety_settings
+    explanation: >
+      Google ADK agents use Gemini models whose configurable content filters
+      default to OFF when safety_settings is not provided. Harm categories
+      including DANGEROUS_CONTENT, HATE_SPEECH, HARASSMENT, and
+      SEXUALLY_EXPLICIT are not actively filtered. In an agentic loop where
+      model outputs drive subsequent tool calls, an unfiltered harmful output
+      can propagate into real side effects.
+    fix: >
+      Pass safety_settings= to the Agent constructor with explicit
+      HarmBlockThreshold values for each HarmCategory your use case requires.
+      At minimum set DANGEROUS_CONTENT to BLOCK_LOW_AND_ABOVE for agents that
+      touch external data or execute tools with side effects.
+    fix_type: config
+    fix_hints:
+      guard: safety_settings_required

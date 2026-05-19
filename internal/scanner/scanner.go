@@ -53,6 +53,9 @@ func Run(cfg Config) (models.ScanResult, error) {
 		return models.ScanResult{}, fmt.Errorf("discover: %w", err)
 	}
 	agents := analysis.DiscoverAgents(parsed)
+	// ADK tools are plain functions passed to Agent(tools=[...]) — no decorator.
+	// Discover them after agent discovery so we can walk the tools= kwarg.
+	tools = append(tools, analysis.DiscoverADKToolsFromAgents(agents, parsed)...)
 	guardrails := analysis.DiscoverGuardrails(parsed)
 	sessions := analysis.DiscoverSessions(parsed)
 
@@ -115,6 +118,8 @@ func deriveSDKsDetected(tools []models.ToolDef, agents []models.AgentDef) []mode
 			seen[models.SDKClaudeAgentSDK] = true
 		case models.KindOpenAITool:
 			seen[models.SDKOpenAIAgents] = true
+		case models.KindGoogleADKTool:
+			seen[models.SDKGoogleADK] = true
 		case models.KindMCPTool:
 			seen[models.SDKMCP] = true
 		case models.KindShellInvocation:

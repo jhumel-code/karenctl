@@ -879,6 +879,48 @@ var policyAgentRuleCases = []policyAgentCase{
 		},
 		models.RepoInventory{},
 		false},
+
+	// ─── GADK-101 no before_tool_callback ────────────────────────────────────
+	{"GADK-101 fires when before_tool_callback absent", "GADK-101",
+		models.AgentDef{
+			SDK:   models.SDKGoogleADK,
+			Class: "Agent",
+			Name:  "customer_agent",
+		},
+		models.RepoInventory{},
+		true},
+	{"GADK-101 silent when before_tool_callback present", "GADK-101",
+		models.AgentDef{
+			SDK:   models.SDKGoogleADK,
+			Class: "Agent",
+			Name:  "customer_agent",
+			Kwargs: &models.KwargTree{Children: map[string]*models.KwargTree{
+				"before_tool_callback": {Value: &models.Expr{Kind: models.ExprNameRef, Text: "validate_tool_call"}},
+			}},
+		},
+		models.RepoInventory{},
+		false},
+
+	// ─── GADK-102 no safety_settings ─────────────────────────────────────────
+	{"GADK-102 fires when safety_settings absent", "GADK-102",
+		models.AgentDef{
+			SDK:   models.SDKGoogleADK,
+			Class: "Agent",
+			Name:  "customer_agent",
+		},
+		models.RepoInventory{},
+		true},
+	{"GADK-102 silent when safety_settings present", "GADK-102",
+		models.AgentDef{
+			SDK:   models.SDKGoogleADK,
+			Class: "Agent",
+			Name:  "customer_agent",
+			Kwargs: &models.KwargTree{Children: map[string]*models.KwargTree{
+				"safety_settings": {Value: &models.Expr{Kind: models.ExprNameRef, Text: "SAFETY_SETTINGS"}},
+			}},
+		},
+		models.RepoInventory{},
+		false},
 }
 
 func TestPolicyAgentRules(t *testing.T) {

@@ -119,11 +119,13 @@ func collectAgentImports(pf ParsedFile) map[string]agentImport {
 		}
 		moduleName := astutil.NodeText(n.ChildByFieldName("module_name"), pf.Source)
 		var sdk models.SDK
-		switch moduleName {
-		case "agents":
+		switch {
+		case moduleName == "agents":
 			sdk = models.SDKOpenAIAgents
-		case "claude_agent_sdk":
+		case moduleName == "claude_agent_sdk":
 			sdk = models.SDKClaudeAgentSDK
+		case moduleName == "google.adk.agents" || moduleName == "google.adk":
+			sdk = models.SDKGoogleADK
 		default:
 			return true
 		}
@@ -365,6 +367,52 @@ func discoverSessionsInFile(pf ParsedFile) []models.SessionUse {
 		}
 		return true
 	})
+	return out
+}
+
+// DiscoverADKToolsFromAgents finds plain Python functions that are referenced
+// in Google ADK Agent(tools=[...]) constructors. The ADK does not require a
+// decorator — tools are passed as plain callables. This pass runs after
+// DiscoverAgents so it can inspect the resolved agent kwargs.
+func DiscoverADKToolsFromAgents(agents []models.AgentDef, parsed []ParsedFile) []models.ToolDef {
+	// Build a global index of function_definition nodes by name across all files.
+	type funcEntry struct {
+		pf   ParsedFile
+		node *sitter.Node
+	}
+	funcIdx := map[string]funcEntry{}
+	for _, pf := range parsed {
+		for _, fn := range astutil.FindAll(pf.Tree.RootNode(), "function_definition") {
+			name := astutil.FunctionName(fn, pf.Source)
+			if name != "" {
+				funcIdx[name] = funcEntry{pf: pf, node: fn}
+			}
+		}
+	}
+
+	seen := map[string]bool{} // deduplicate by "file:name"
+	var out []models.ToolDef
+	for _, a := range agents {
+		if a.SDK != models.SDKGoogleADK {
+			continue
+		}
+		toolsKwarg := agentKwarg(&a, "tools")
+		if toolsKwarg == nil || toolsKwarg.Value == nil || toolsKwarg.Value.Kind != models.ExprList {
+			continue
+		}
+		for _, item := range toolsKwarg.Value.List {
+			entry, ok := funcIdx[item.Text]
+			if !ok {
+				continue
+			}
+			key := entry.pf.RelPath + ":" + item.Text
+			if seen[key] {
+				continue
+			}
+			seen[key] = true
+			out = append(out, buildTool(entry.node, entry.pf, models.KindGoogleADKTool))
+		}
+	}
 	return out
 }
 

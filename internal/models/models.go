@@ -223,6 +223,7 @@ type SDK string
 const (
 	SDKClaudeAgentSDK SDK = "claude_agent_sdk"
 	SDKOpenAIAgents   SDK = "openai_agents"
+	SDKGoogleADK      SDK = "google_adk"
 	SDKMCP            SDK = "mcp"
 	SDKOpenShell      SDK = "openshell"
 )
