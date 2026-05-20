@@ -32,3 +32,5 @@ rules:
     fix_type: code
     fix_hints:
       wrap_errors: true
+    references:
+      - "OWASP LLM Top 10:2025 LLM05 Improper Output Handling — https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/"

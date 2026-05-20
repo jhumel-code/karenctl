@@ -37,3 +37,6 @@ rules:
     fix_type: config
     fix_hints:
       policy_emit: network_allowlist
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
+      - "OWASP LLM Top 10:2025 LLM10 Unbounded Consumption — https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/"

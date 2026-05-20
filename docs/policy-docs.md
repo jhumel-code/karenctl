@@ -21,7 +21,8 @@ Copy this verbatim. Fill every section. Delete no sections.
 **File:** `internal/rules/policies/<category>/<topic>.yaml`  
 **Rules:** <comma-separated rule IDs, e.g. CSDK-001, CSDK-002>  
 **Severities:** <comma-separated severities matching rule order>  
-**Fix types:** <comma-separated fix_type values matching rule order — `config` or `code`>
+**Fix types:** <comma-separated fix_type values matching rule order — `config` or `code`>  
+**References:** <comma-separated OWASP LLM Top 10:2025 IDs that anchor the rules in an external standard — e.g. LLM01, LLM06>
 
 ---
 

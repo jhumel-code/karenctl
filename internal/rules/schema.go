@@ -32,6 +32,7 @@ type RuleDef struct {
 	Fix         string                  `yaml:"fix"`
 	FixType     models.FixType          `yaml:"fix_type"`
 	FixHints    map[string]any          `yaml:"fix_hints,omitempty"`
+	References  []string                `yaml:"references,omitempty"`
 	Category    models.DetectorCategory `yaml:"-"` // populated by loader
 }
 

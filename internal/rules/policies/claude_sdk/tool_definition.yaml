@@ -29,6 +29,8 @@ rules:
     fix_type: code
     fix_hints:
       add_docstring: true
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: CSDK-002
     title: Tool parameters are not type-annotated
@@ -53,6 +55,8 @@ rules:
     fix_type: code
     fix_hints:
       add_input_schema: true
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: CSDK-007
     title: Ambiguous tool name
@@ -81,3 +85,5 @@ rules:
     fix: >
       Rename to a verb-object form, e.g. `summarize_invoice`, `refund_charge`.
     fix_type: code
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"

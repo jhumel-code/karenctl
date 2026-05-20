@@ -30,6 +30,8 @@ rules:
     fix_type: config
     fix_hints:
       policy_emit: sandbox_baseline
+    references:
+      - "OWASP LLM Top 10:2025 LLM10 Unbounded Consumption — https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/"
 
   - id: OSH-006
     title: No sandbox process identity configured
@@ -53,6 +55,8 @@ rules:
     fix_type: config
     fix_hints:
       policy_emit: process_identity
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: OSH-007
     title: Landlock filesystem isolation not enforced strictly
@@ -80,3 +84,5 @@ rules:
     fix_type: config
     fix_hints:
       policy_emit: landlock_hard
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"

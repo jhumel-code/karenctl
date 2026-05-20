@@ -35,6 +35,9 @@ rules:
     fix_hints:
       hook: before_tool_callback
       guard: param_allowlist
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: GADK-102
     title: Agent has no safety_settings
@@ -62,3 +65,6 @@ rules:
     fix_type: config
     fix_hints:
       guard: safety_settings_required
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
+      - "OWASP LLM Top 10:2025 LLM05 Improper Output Handling — https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/"

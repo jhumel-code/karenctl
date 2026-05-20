@@ -40,3 +40,5 @@ rules:
     fix_type: config
     fix_hints:
       policy_emit: command_allowlist
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"

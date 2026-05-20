@@ -35,6 +35,8 @@ rules:
     fix_type: code
     fix_hints:
       policy_action: deny_shell_true
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
 
   - id: OSH-002
     title: Shell invocation without an allowed-command list
@@ -67,3 +69,5 @@ rules:
     fix_type: config
     fix_hints:
       policy_emit: binary_network_scope
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"

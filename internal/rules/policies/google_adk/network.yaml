@@ -54,3 +54,5 @@ rules:
       hook: pretooluse_validate
       guard: timeout_required
       policy_emit: network_allowlist
+    references:
+      - "OWASP LLM Top 10:2025 LLM10 Unbounded Consumption — https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/"

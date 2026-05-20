@@ -33,6 +33,9 @@ rules:
       on the Agent(...) constructor. The guardrail should return
       GuardrailFunctionOutput(tripwire_triggered=True, ...) on rejected input.
     fix_type: config
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: OAI-102
     title: Agent uses tool_use_behavior="stop_on_first_tool"
@@ -59,6 +62,9 @@ rules:
       "run_llm_again" is safe) or constrain it via StopAtTools(...) listing
       only tools whose outputs you control.
     fix_type: config
+    references:
+      - "OWASP LLM Top 10:2025 LLM05 Improper Output Handling — https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/"
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: OAI-103
     title: tool_choice="required" combined with reset_tool_choice=False
@@ -88,6 +94,9 @@ rules:
       ensure at least one of the tools terminates the agent via
       tool_use_behavior=StopAtTools(...).
     fix_type: config
+    references:
+      - "OWASP LLM Top 10:2025 LLM10 Unbounded Consumption — https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/"
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: OAI-104
     title: Raw Agent (not SandboxAgent) wires shell or filesystem-touching tools
@@ -112,3 +121,5 @@ rules:
       privileged tools are needed but sandboxing is impractical, document
       the decision and acknowledge the elevated risk explicitly.
     fix_type: config
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"

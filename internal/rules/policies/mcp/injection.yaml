@@ -42,6 +42,8 @@ rules:
     fix_hints:
       hook: pretooluse_validate
       guard: param_name_sanitize
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
 
   - id: MCP-002
     title: MCP tool contains eval or exec call
@@ -68,6 +70,8 @@ rules:
     fix_type: code
     fix_hints:
       policy_action: deny_code_exec
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
 
   - id: MCP-003
     title: MCP tool deserializes data with pickle or marshal
@@ -94,6 +98,8 @@ rules:
     fix_type: code
     fix_hints:
       policy_action: deny_unsafe_deserialize
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
 
   - id: MCP-004
     title: MCP tool has no description
@@ -115,3 +121,5 @@ rules:
       and its outputs. The MCP framework surfaces this as the tool description
       to any connected client.
     fix_type: code
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"

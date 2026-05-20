@@ -106,6 +106,14 @@ rules:
                                             # The renderer groups findings by fix_type so users see
                                             # safe config fixes before invasive code changes.
 
+    references:                             # OPTIONAL. List of external standard citations that justify
+                                            # this rule's severity and rationale. Rendered in CLI output
+                                            # next to each finding so users can verify the claim against
+                                            # the authoritative source. Format: "<standard> <id> <name>".
+                                            # Example values:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection"
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency"
+
     fix_hints:                              # OPTIONAL. Free-form keys consumed by the generators.
                                             # Unknown keys are ignored. Common keys:
       hook: pretooluse_validate             #   hook: <name>          — opts the finding into hook generation

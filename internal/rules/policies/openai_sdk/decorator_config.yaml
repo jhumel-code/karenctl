@@ -30,6 +30,8 @@ rules:
       setting). If the relaxation was needed for a specific input shape,
       adjust the type hints to accept that shape explicitly.
     fix_type: code
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: OAI-004
     title: Tool has no failure_error_function
@@ -56,3 +58,5 @@ rules:
       receive the exception and the run context, and return a structured
       string the model can reason about.
     fix_type: code
+    references:
+      - "OWASP LLM Top 10:2025 LLM05 Improper Output Handling — https://genai.owasp.org/llmrisk/llm052025-improper-output-handling/"

@@ -164,6 +164,9 @@ func (r *Renderer) Render(result models.ScanResult) string {
 					f.FilePath, f.Line, f.FixType)
 				fmt.Fprintf(&b, "        %s\n", styleDim.Render(wrapAt(f.Explanation, 86)))
 				fmt.Fprintf(&b, "        %s %s\n", styleDim.Render("fix:"), f.SuggestedFix)
+				if len(f.References) > 0 {
+					fmt.Fprintf(&b, "        %s %s\n", styleDim.Render("ref:"), strings.Join(f.References, " · "))
+				}
 			}
 		}
 		// Agent/repo-scoped findings have no ToolName.
@@ -174,6 +177,9 @@ func (r *Renderer) Render(result models.ScanResult) string {
 					f.FilePath, f.Line, f.FixType)
 				fmt.Fprintf(&b, "      %s\n", styleDim.Render(wrapAt(f.Explanation, 86)))
 				fmt.Fprintf(&b, "      %s %s\n", styleDim.Render("fix:"), f.SuggestedFix)
+				if len(f.References) > 0 {
+					fmt.Fprintf(&b, "      %s %s\n", styleDim.Render("ref:"), strings.Join(f.References, " · "))
+				}
 			}
 		}
 	}

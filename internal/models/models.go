@@ -185,6 +185,7 @@ type Finding struct {
 	SuggestedFix string             `json:"suggested_fix"`
 	Confidence   float64            `json:"confidence"` // 0..1
 	FixHints     map[string]any     `json:"fix_hints,omitempty"`
+	References   []string           `json:"references,omitempty"`
 }
 
 // BaseScore returns the flat 0–100 score for this finding: BaseScoreWeight × Confidence, 1 dp.

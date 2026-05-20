@@ -30,3 +30,5 @@ rules:
       agents.tracing.add_trace_processor(...) that redacts sensitive fields
       before they leave the process.
     fix_type: config
+    references:
+      - "OWASP LLM Top 10:2025 LLM02 Sensitive Information Disclosure — https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/"

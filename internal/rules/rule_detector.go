@@ -110,6 +110,7 @@ func findingFromRule(r RuleDef, filePath string, line int, toolName string) mode
 		SuggestedFix: r.Fix,
 		Confidence:   r.Confidence,
 		FixHints:     r.FixHints,
+		References:   r.References,
 	}
 }
 

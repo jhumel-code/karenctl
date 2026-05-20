@@ -48,3 +48,5 @@ rules:
     fix_hints:
       hook: pretooluse_validate
       inject_idempotency: true
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"

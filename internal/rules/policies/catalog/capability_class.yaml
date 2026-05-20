@@ -46,6 +46,9 @@ rules:
     fix_type: config
     fix_hints:
       policy_action: deny_code_exec
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: CATL-002
     title: Shell execution tool has no command allowlist
@@ -82,6 +85,9 @@ rules:
     fix_type: config
     fix_hints:
       policy_emit: command_allowlist
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: CATL-003
     title: File write tool has no path validation
@@ -119,6 +125,9 @@ rules:
     fix_hints:
       hook: pretooluse_validate
       guard: path_under_root
+    references:
+      - "OWASP LLM Top 10:2025 LLM01 Prompt Injection — https://genai.owasp.org/llmrisk/llm01-prompt-injection/"
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: CATL-004
     title: Agent spawn tool has no privilege scoping guard
@@ -154,6 +163,8 @@ rules:
     fix_hints:
       hook: pretooluse_validate
       guard: subagent_tool_scope
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: CATL-005
     title: Auth tool has no secure credential handling
@@ -191,6 +202,8 @@ rules:
     fix_hints:
       hook: posttooluse_log
       guard: redact_credentials
+    references:
+      - "OWASP LLM Top 10:2025 LLM02 Sensitive Information Disclosure — https://genai.owasp.org/llmrisk/llm022025-sensitive-information-disclosure/"
 
   - id: CATL-006
     title: Computer use tool has no confirmation gate
@@ -227,6 +240,8 @@ rules:
     fix_hints:
       hook: pretooluse_validate
       guard: require_human_approval
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: CATL-007
     title: Data mutation tool has no dry-run or rollback support
@@ -262,6 +277,8 @@ rules:
     fix_hints:
       hook: pretooluse_validate
       guard: dry_run_check
+    references:
+      - "OWASP LLM Top 10:2025 LLM06 Excessive Agency — https://genai.owasp.org/llmrisk/llm062025-excessive-agency/"
 
   - id: CATL-008
     title: External API tool has no rate limit guard
@@ -297,6 +314,8 @@ rules:
     fix_hints:
       hook: pretooluse_validate
       guard: rate_limit_check
+    references:
+      - "OWASP LLM Top 10:2025 LLM10 Unbounded Consumption — https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/"
 
   - id: CATL-009
     title: Memory write tool has no size or scope limit
@@ -332,3 +351,5 @@ rules:
     fix_hints:
       hook: pretooluse_validate
       guard: memory_scope_limit
+    references:
+      - "OWASP LLM Top 10:2025 LLM10 Unbounded Consumption — https://genai.owasp.org/llmrisk/llm102025-unbounded-consumption/"
